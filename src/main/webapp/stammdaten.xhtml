@@ -1,0 +1,137 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+  <h:head>
+    <title>Stammdaten</title>
+  </h:head>
+  <h:body>
+    <h:form id="form">
+      <p:growl id="msgs" showDetail="true"/>
+
+      <p:dataTable id="materialTable" var="material" value="#{stammdatenView.materialsModel}" paginator="true" rows="10"
+                   paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                   rowsPerPageTemplate="5,10,15,20" lazy="true">
+        <f:facet name="header">
+          Stammdaten
+        </f:facet>
+
+        <p:column headerText="Materialtext">
+          <h:outputText value="#{material.materialtext}" />
+        </p:column>
+        <p:column headerText="MatNr" filterBy="#{material.matNr}">
+          <p:link outcome="bewegungen" value="#{material.matNr}">
+            <f:param name="matNr" value="#{material.matNr}" />
+          </p:link>
+        </p:column>
+        <p:column rendered="false" headerText="Materialkurztext">
+          <h:outputText value="#{material.materialkurztext}" />
+        </p:column>
+        <p:column rendered="false" headerText="Gilt_ab">
+          <h:outputText value="#{material.gilt_ab}" />
+        </p:column>
+        <p:column rendered="false" headerText="Bruttogewicht">
+          <h:outputText value="#{material.bruttogewicht}" />
+        </p:column>
+        <p:column rendered="false" headerText="Nettogewicht">
+          <h:outputText value="#{material.nettogewicht}" />
+        </p:column>
+        <p:column rendered="false" headerText="Gewichtseinheit">
+          <h:outputText value="#{material.gewichtseinheit}" />
+        </p:column>
+        <p:column rendered="false" headerText="Nettopreis">
+          <h:outputText value="#{material.nettopreis}" />
+        </p:column>
+        <p:column rendered="false" headerText="Preiseinheit">
+          <h:outputText value="#{material.preiseinheit}" />
+        </p:column>
+        <p:column rendered="false" headerText="Basismengeneinheit">
+          <h:outputText value="#{material.basismengeneinheit}" />
+        </p:column>
+        <p:column  headerText="Bestand2016">
+          <h:outputText value="#{material.bestand2016}" />
+        </p:column>
+        <p:column headerText="Wert2016">
+          <h:outputText value="#{material.wert2016}" />
+        </p:column>
+        <p:column rendered="false" headerText="Sicherheitsbestand">
+          <h:outputText value="#{material.sicherheitsbestand}" />
+        </p:column>
+        <p:column rendered="false" headerText="Volumen">
+          <h:outputText value="#{material.volumen}" />
+        </p:column>
+        <p:column rendered="false" headerText="Volumeneinheit">
+          <h:outputText value="#{material.volumeneinheit}" />
+        </p:column>
+        <p:column headerText="Produkthierarchie">
+          <h:outputText value="#{material.produkthierarchie}" />
+        </p:column>
+        <p:column rendered="false" headerText="Haupt-ProdHier">
+          <h:outputText value="#{material.hauptProdHier}" />
+        </p:column>
+        <p:column rendered="false" headerText="BezHaupt-ProdHier">
+          <h:outputText value="#{material.bezHauptProdHier}" />
+        </p:column>
+        <p:column rendered="false" headerText="Rundungsprofil">
+          <h:outputText value="#{material.rundungsprofil}" />
+        </p:column>
+        <p:column rendered="false" headerText="ProdHier">
+          <h:outputText value="#{material.prodHier}" />
+        </p:column>
+        <p:column rendered="false" headerText="BezProdHierarchie">
+          <h:outputText value="#{material.bezProdHierarchie}" />
+        </p:column>
+        <p:column rendered="false" headerText="Waehrung">
+          <h:outputText value="#{material.waehrung}" />
+        </p:column>
+        <p:column headerText="Planlieferzeit">
+          <h:outputText value="#{material.planlieferzeit}" />
+        </p:column>
+        <p:column rendered="false" headerText="BestellpreisME">
+          <h:outputText value="#{material.bestellpreisME}" />
+        </p:column>
+        <p:column rendered="false" headerText="WE-Bearbeitungszeit">
+          <h:outputText value="#{material.weBearbeitungszeit}" />
+        </p:column>
+        <p:column headerText="Meldebestand">
+          <h:outputText value="#{material.meldebestand}" />
+        </p:column>
+        <p:column rendered="false" headerText="Verfuebarkeitspr">
+          <h:outputText value="#{material.verfuebarkeitspr}" />
+        </p:column>
+        <p:column rendered="false" headerText="Dispomerkmal">
+          <h:outputText value="#{material.dispomerkmal}" />
+        </p:column>
+        <p:column headerText="Bestand2015">
+          <h:outputText value="#{material.bestand2015}" />
+        </p:column>
+        <p:column headerText="Wert2015">
+          <h:outputText value="#{material.wert2015}" />
+        </p:column>
+        <p:column rendered="false" headerText="Wert2015EUR">
+          <h:outputText value="#{material.wert2015EUR}" />
+        </p:column>
+        <p:column rendered="false" headerText="Wert2015CHF">
+          <h:outputText value="#{material.wert2015CHF}" />
+        </p:column>
+        <p:column rendered="false" headerText="Wert2015USD">
+          <h:outputText value="#{material.wert2015USD}" />
+        </p:column>
+        <p:column rendered="false" headerText="Wert2016EUR">
+          <h:outputText value="#{material.wert2016EUR}" />
+        </p:column>
+        <p:column rendered="false" headerText="Wert2016CHF">
+          <h:outputText value="#{material.wert2016CHF}" />
+        </p:column>
+        <p:column rendered="false" headerText="Wert2016USD">
+          <h:outputText value="#{material.wert2016USD}" />
+        </p:column>
+
+      </p:dataTable>
+
+    </h:form>
+  </h:body>
+</html>
