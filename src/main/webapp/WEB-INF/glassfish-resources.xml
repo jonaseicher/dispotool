@@ -13,5 +13,5 @@
     <property name="URL" value="jdbc:mysql://172.17.0.2:3306/dispotool?zeroDateTimeBehavior=convertToNull"/>
     <property name="User" value="root"/>
     <property name="Password" value="wurglbux4MYSQL"/>
-.  </jdbc-connection-pool>
+  </jdbc-connection-pool>
 </resources>
