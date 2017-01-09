@@ -27,26 +27,30 @@
       <artifactId>hibernate-entitymanager</artifactId>
       <version>${hibernate.version}</version>
     </dependency>
-    <!--<dependency>
+    <!-- optional? -->
+    <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-ehcache</artifactId>
         <version>${hibernate.version}</version>
-    </dependency>-->
-    <!--<dependency>
+    </dependency>
+    <dependency>
         <groupId>org.hibernate.javax.persistence</groupId>
         <artifactId>hibernate-jpa-2.0-api</artifactId>
         <version>1.0.1.Final</version>
-    </dependency>-->
-    <!--<dependency>
+    </dependency>
+    <dependency>
         <groupId>javax.transaction</groupId>
         <artifactId>jta</artifactId>
         <version>1.1</version>
-    </dependency>-->
+    </dependency>
+    <!-- optional? end -->
+    
     <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
-      <version>6.0.5</version>
+      <!--<version>6.0.5</version>-->
+      <version>5.1.40</version>
     </dependency>
     <!-- Frontend/Web -->
     <dependency>
