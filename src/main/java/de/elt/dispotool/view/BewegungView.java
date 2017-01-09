@@ -29,7 +29,6 @@ import org.primefaces.model.chart.BarChartModel;
 import org.primefaces.model.chart.BarChartSeries;
 import org.primefaces.model.chart.DateAxis;
 
-
 /**
  *
  * @author jonas.eicher
@@ -47,8 +46,7 @@ public class BewegungView implements Serializable {
   @Inject
   BwaDao bwaDao;
 
-  List<Bewegung> bewegungen;
-  List<String> materialNummern;
+//  List<Bewegung> bewegungen;
   List<Bwa> bwas;
 
   String materialNummer;
@@ -58,43 +56,38 @@ public class BewegungView implements Serializable {
 
   @PostConstruct
   public void init() {
-    Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-    materialNummer = params.get("matNr");
-    if (params.get("matNr") == null) {
+    Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+    String matNr = params.get("matNr");
+    if (matNr == null) {
       log.warning("materialnummer was null. setting default value.");
-      materialNummer = "64365703";
+      matNr = "64365703";
     }
-    //bewegungen = bewegungDao.getByMaterialnummer(materialNummer);
-//    materialNummern = bewegungDao.getMaterialNummern();
-    bwas = bwaDao.getBewegungsartenOfMaterial(materialNummer);
-
-    log.log(Level.FINE, "materialNummern:{0}", materialNummern);
-    log.log(Level.FINE, "bwas:{0}", bwas);
-    initChart();
+    setMaterialNummer(matNr);
   }
 
-  public List<String> completeMaterialNummer(String query) {
-    log.fine("query:" + query);
-    log.fine("matnr:" + materialNummer);
-    List<String> results = new ArrayList<>();
-    for (String mnr : materialNummern) {
-      if (mnr.contains(query)) {
-        results.add(mnr);
-      }
-    }
-    log.log(Level.FINE, "completeResults:{0}", results);
-    return results;
-  }
+//  public List<String> completeMaterialNummer(String query) {
+//    log.fine("query:" + query);
+//    log.fine("matnr:" + materialNummer);
+//    List<String> results = new ArrayList<>();
+//    for (String mnr : materialNummern) {
+//      if (mnr.contains(query)) {
+//        results.add(mnr);
+//      }
+//    }
+//    log.log(Level.FINE, "completeResults:{0}", results);
+//    return results;
+//  }
 
   public void setMaterialNummer(String matnr) {
     materialNummer = matnr;
-    //bewegungen = bewegungDao.getByMaterialnummer(matnr);
+    bwas = bwaDao.getBewegungsartenOfMaterial(materialNummer);    
+//bewegungen = bewegungDao.getByMaterialnummer(matnr);
     initChart();
   }
 
   public void initChart() {
     barChartModel = new BarChartModel();
-
+    
     for (Bwa bwa : bwas) {
       addSeries(bwa);
     }
@@ -125,10 +118,12 @@ public class BewegungView implements Serializable {
 
     BarChartSeries s = new BarChartSeries();
     s.setLabel(bwa.getBwa());
+    long stamp = System.currentTimeMillis();
     List<Bewegung> bewegungenOfBwa = bewegungDao.getBewegungen(materialNummer, bwa.getBwa());
+    log.log(Level.INFO, "Query time: {0}", Long.toString(System.currentTimeMillis() - stamp));
     for (Bewegung b : bewegungenOfBwa) {
       //s.set(b.getBuchungsdatum(), vorzeichen * b.getMenge());
-      log.log(Level.FINE, "setting: {0} = {1}", new Object[]{b.getBuchungsdatum(), vorzeichen*b.getMenge()});
+      log.log(Level.FINE, "setting: {0} = {1}", new Object[]{b.getBuchungsdatum(), vorzeichen * b.getMenge()});
       String date = format.format(b.getBuchungsdatum());
       log.log(Level.FINE, "{0} = {1}", new Object[]{date, vorzeichen * b.getMenge()});
       s.set(date, vorzeichen * b.getMenge());

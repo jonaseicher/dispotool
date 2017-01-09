@@ -43,8 +43,19 @@ public class BwaEditView implements Serializable {
 
   @PostConstruct
   public void init() {
-    bwas = bwaDao.getAll();
+//    bwas = bwaDao.getAll();
     log.log(Level.FINE, "bwas:{0}", bwas);
+  }
+
+  public List<Bwa> getBwas() {
+    if (bwas == null) {
+      bwas = bwaDao.getAll();
+    }
+    return bwas;
+  }
+
+  public List<Bwa> getBwas(String materialNummer) {
+    return bwaDao.getBewegungsartenOfMaterial(materialNummer);
   }
 
   public void onCellEdit(CellEditEvent event) {
@@ -52,10 +63,10 @@ public class BwaEditView implements Serializable {
     Object newValue = event.getNewValue();
 
     if (newValue != null && !newValue.equals(oldValue)) {
-      Bwa bwa =(Bwa)((DataTable)event.getComponent()).getRowData();
+      Bwa bwa = (Bwa) ((DataTable) event.getComponent()).getRowData();
       bwaDao.merge(bwa);
       FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Cell Changed", "Bewegungsart: " + bwa.getBwa() + ", Old: " + oldValue + ", New:" + newValue);
-      FacesContext.getCurrentInstance().addMessage(null, msg);      
+      FacesContext.getCurrentInstance().addMessage(null, msg);
     }
   }
 }
