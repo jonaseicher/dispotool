@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="1.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence    http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
-  <persistence-unit name="mysql" transaction-type="JTA">
+<!--  <persistence-unit name="mysql" transaction-type="JTA">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <jta-data-source>java:app/jdbc/mySqlLocal</jta-data-source>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
@@ -11,8 +11,8 @@
       <property name="javax.persistence.jdbc.password" value="dispotool"/>
       <property name="eclipselink.ddl-generation.output-mode" value="database"/>
     </properties>
-  </persistence-unit>
-<!--  <persistence-unit name="mysql" transaction-type="JTA">
+  </persistence-unit>-->
+  <persistence-unit name="mysql" transaction-type="JTA">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <jta-data-source>java:app/jdbc/mySqlLocal</jta-data-source>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
@@ -23,5 +23,5 @@
       <property name="javax.persistence.jdbc.password" value="wurglbux4MYSQL"/>
       <property name="eclipselink.ddl-generation.output-mode" value="database"/>
     </properties>
-  </persistence-unit>-->
+  </persistence-unit>
 </persistence>
