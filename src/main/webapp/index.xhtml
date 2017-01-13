@@ -13,33 +13,41 @@
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
       <script type="text/javascript">
 
-        // Load the Visualization API and the corechart package.
         google.charts.load('current', {'packages': ['corechart']});
-
         // Set a callback to run when the Google Visualization API is loaded.
         google.charts.setOnLoadCallback(drawChart);
 
-        // Callback that creates and populates a data table,
-        // instantiates the pie chart, passes in the data and
-        // draws it.
         function drawChart() {
 
-          // Create the data table.
           var data = new google.visualization.DataTable();
           data.addColumn('date', 'Datum');
           data.addColumn('number', 'Menge');
-          var test = [];
-          var arr = JSON.parse("#{testView.testData}");
-          jQuery.each(arr, function () {
-            test.push([new Date(this[0]) , this[1] ]);
+
+          var rows = [];
+          var javaData = JSON.parse("#{testView.testData}");
+          // Convert the milliseconds since 1970 to a javascript date
+          jQuery.each(javaData, function () {
+            rows.push([new Date(this[0]), this[1]]);
           });
 
-          data.addRows(test);
+          data.addRows(rows);
 
           // Set chart options
           var options = {'title': 'Bewegungsdaten vom Topf',
-            'width': 800,
-            'height': 400};
+            chart: { subtitle: 'Materialnummer: #{bewegungView.materialNummer}' },
+//            'width': 800,
+            'height': 400,
+          vAxis: {
+          title: 'Bewegungsmenge'
+        },
+        hAxis: {
+          title: 'Datum',
+          format: 'd.MMM yyyy',
+          slantedText: true,
+          slantedTextAngle: 30
+        },
+                isStacked: true
+      };
 
           // Instantiate and draw our chart, passing in some options.
           var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
@@ -57,19 +65,19 @@
         <script type="text/javascript">
 
           document.getElementById("demo").innerHTML = "#{testView.testData}";
-          
-          var test2 = [234,3];
+
+          var test2 = [234, 3];
           var arr = JSON.parse("#{testView.testData}");
           jQuery.each(arr, function () {
-            test2.push([new Date(this[0]) , this[1] ]);
+            test2.push([new Date(this[0]), this[1]]);
           });
 
-test2.push("asdf");
-         
-         document.getElementById("demo2").innerHTML = test2.length; 
-         document.getElementById("demo4").innerHTML = test2[10]; 
-         
-         
+          test2.push("asdf");
+
+          document.getElementById("demo2").innerHTML = test2.length;
+          document.getElementById("demo4").innerHTML = test2[10];
+
+
 //          jQuery.each(test, function (i, args) {
 //            document.getElementById("demo3").innerHTML += "<p>My id is " + this + ". And i = " + i + ", date=" + args[0] + ", val=" + args[1] + "</p>";
 //          });
