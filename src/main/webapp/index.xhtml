@@ -5,89 +5,99 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui">
 
-  <f:view contentType="text/html">
+    <f:view contentType="text/html">
 
-    <head>
-      <!--Load the AJAX API-->
-      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-      <script type="text/javascript">
+        <head>
+            <!--Load the AJAX API-->
+            <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+            <script type="text/javascript">
 
-        google.charts.load('current', {'packages': ['corechart']});
-        // Set a callback to run when the Google Visualization API is loaded.
-        google.charts.setOnLoadCallback(drawChart);
+                google.charts.load('current', {'packages': ['corechart']});
+                // Set a callback to run when the Google Visualization API is loaded.
+                google.charts.setOnLoadCallback(drawChart);
 
-        function drawChart() {
+                function drawChart() {
 
-          var data = new google.visualization.DataTable();
-          data.addColumn('date', 'Datum');
-          data.addColumn('number', 'Menge');
+                    var data = new google.visualization.DataTable();
+                    data.addColumn('date', 'Datum');
+                    data.addColumn('number', 'Menge');
 
-          var rows = [];
-          var javaData = JSON.parse("#{testView.testData}");
-          // Convert the milliseconds since 1970 to a javascript date
-          jQuery.each(javaData, function () {
-            rows.push([new Date(this[0]), this[1]]);
-          });
+                    var rows = [];
+                var javaData = JSON.parse("# {testView.testData}");
+                     Convert the milliseconds since 1970 to a javascript date
+                jQuery.each(javaData, function () {
+                  rows.push([new Date(this[0]), this[1]]);         
+                });
 
-          data.addRows(rows);
+                   
+                data.addRows(rows);
 
-          // Set chart options
-          var options = {'title': 'Bewegungsdaten vom Topf',
-            chart: { subtitle: 'Materialnummer: #{bewegungView.materialNummer}' },
-//            'width': 800,
-            'height': 400,
-          vAxis: {
-          title: 'Bewegungsmenge'
-        },
-        hAxis: {
-          title: 'Datum',
-          format: 'd.MMM yyyy',
-          slantedText: true,
-          slantedTextAngle: 30
-        },
-                isStacked: true
-      };
+                    // Set chart options
+                    var options = {'title': 'Bewegungsdaten vom Topf',
+                        chart: {subtitle: 'Materialnummer: #{bewegungView.materialNummer}'},
+      //            'width': 800,
+                        'height': 400,
+                        vAxis: {
+                            title: 'Bewegungsmenge'
+                        },
+                        hAxis: {
+                            title: 'Datum',
+                            format: 'd.MMM yyyy',
+                            slantedText: true,
+                            slantedTextAngle: 30
+                        },
+                        isStacked: true
+                    };
 
-          // Instantiate and draw our chart, passing in some options.
-          var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
-          chart.draw(data, options);
-        }
-      </script>
-    </head>
+                    // Instantiate and draw our chart, passing in some options.
+                    var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+                    chart.draw(data, options);
+                }
+            </script>
+        </head>
 
-    <body>
-      <div>
-        <p id="demo"></p>
-        <p id="demo2"></p>
-        <p id="demo3"></p>
-        <p id="demo4"></p>
-        <script type="text/javascript">
+        <body>
+            <div>
+                <p id="demo"></p>
+                <p id="demo2"></p>
+                <p id="demo3"></p>
+                <p id="demo4"></p>
+                <p id="demo5"></p>
+                <script type="text/javascript">
 
-          document.getElementById("demo").innerHTML = "#{testView.testData}";
+                    document.getElementById("demo").innerHTML = "#{testView.testData}";
 
-          var test2 = [234, 3];
-          var arr = JSON.parse("#{testView.testData}");
-          jQuery.each(arr, function () {
-            test2.push([new Date(this[0]), this[1]]);
-          });
+                    var test2 = [234, 3];
+                    var arr = JSON.parse("#{testView.testData}");
+                    jQuery.each(arr, function () {
+                        test2.push([new Date(this[0]), this[1]]);
+                    });
 
-          test2.push("asdf");
+                    test2.push("asdf");
 
-          document.getElementById("demo2").innerHTML = test2.length;
-          document.getElementById("demo4").innerHTML = test2[10];
+                    document.getElementById("demo2").innerHTML = test2.length;
+                    document.getElementById("demo3").innerHTML = test2[10];
 
+                    document.getElementById("demo4").innerHTML = '#{bewegungView.bewegungsMapJson}';
+                    var map = JSON.parse('#{bewegungView.bewegungsMapJson}');
+                    
+//                    document.getElementById("demo5").innerHTML = "";
+//                    jQuery.each(map, function()) {
+//                        document.getElementById("demo5").innerHTML += this
+//                    }
+//                    document.getElementById("demo5").innerHTML = map.toString();
 
-//          jQuery.each(test, function (i, args) {
-//            document.getElementById("demo3").innerHTML += "<p>My id is " + this + ". And i = " + i + ", date=" + args[0] + ", val=" + args[1] + "</p>";
-//          });
-        </script>
-      </div>
-      <!--Div that will hold the pie chart-->
-      <div id="chart_div"></div>
+        //          jQuery.each(test, function (i, args) {
+        //            document.getElementById("demo3").innerHTML += "<p>My id is " + this + ". And i = " + i + ", date=" + args[0] + ", val=" + args[1] + "</p>";
+        //          });
+                </script>
+            </div>
+            <!--Div that will hold the pie chart-->
+            <div id="chart_div"></div>
 
-    </body>
+        </body>
 
-  </f:view>
+    </f:view>
 </html>
 
