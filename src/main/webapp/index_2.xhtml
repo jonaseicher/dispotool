@@ -19,11 +19,24 @@
 
                 function drawChart() {
 
-                    var data = new google.visualization.DataTable(#{bewegungView.bewegungsArray});
+                    var data = new google.visualization.DataTable();
+                    data.addColumn('date', 'Datum');
+                    data.addColumn('number', 'Menge');
+
+                    var rows = [];
+                var javaData = JSON.parse("#{testView.testData}");
+                // Convert the milliseconds since 1970 to a javascript date
+                jQuery.each(javaData, function () {
+                  rows.push([new Date(this[0]), this[1]]);         
+                });
+
+                   
+                data.addRows(rows);
 
                     // Set chart options
-                    var options = {'title': 'Bewegungsdaten von Materialnummer: #{bewegungView.materialNummer}',
-                        //            'width': 800,
+                    var options = {'title': 'Bewegungsdaten vom Topf',
+                        chart: {subtitle: 'Materialnummer: #{bewegungView.materialNummer}'},
+      //            'width': 800,
                         'height': 400,
                         vAxis: {
                             title: 'Bewegungsmenge'
@@ -31,11 +44,8 @@
                         hAxis: {
                             title: 'Datum',
                             format: 'd.MMM yyyy',
-//                            slantedText: true,
-//                            slantedTextAngle: 30
-                        },
-                        bar: {
-                            groupWidth: 12
+                            slantedText: true,
+                            slantedTextAngle: 30
                         },
                         isStacked: true
                     };
@@ -72,16 +82,16 @@
                     document.getElementById("demo4").innerHTML = '#{bewegungView.bewegungsArray}';
 
                     var dataTable = new google.visualization.DataTable('#{bewegungView.bewegungsArray}');
-
+                    
 //                    document.getElementById("demo5").innerHTML = "";
 //                    jQuery.each(map, function()) {
 //                        document.getElementById("demo5").innerHTML += this
 //                    }
 //                    document.getElementById("demo5").innerHTML = map.toString();
 
-                    //          jQuery.each(test, function (i, args) {
-                    //            document.getElementById("demo3").innerHTML += "<p>My id is " + this + ". And i = " + i + ", date=" + args[0] + ", val=" + args[1] + "</p>";
-                    //          });
+        //          jQuery.each(test, function (i, args) {
+        //            document.getElementById("demo3").innerHTML += "<p>My id is " + this + ". And i = " + i + ", date=" + args[0] + ", val=" + args[1] + "</p>";
+        //          });
                 </script>
             </div>
             <!--Div that will hold the chart-->

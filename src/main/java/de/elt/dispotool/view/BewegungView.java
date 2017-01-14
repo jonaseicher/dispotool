@@ -75,10 +75,11 @@ public class BewegungView implements Serializable {
         List<String> bwas = bewegungDao.getBewegungsartenOfMaterial(matNr);
 //  bwas.size()
         List<Bewegung> bewegungen = bewegungDao.getByMaterialnummer(matNr);
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy,MM,dd");
         bewegungsMap = new HashMap<>();
         for (Bewegung b : bewegungen) {
             //Date date = b.getBuchungsdatum();
+//            String date = String.valueOf(b.getBuchungsdatum().getTime());
             String date = format.format(b.getBuchungsdatum());
             String bwa = b.getBewegungsart();
             Map<String, Integer> series = bewegungsMap.get(date);
@@ -97,12 +98,48 @@ public class BewegungView implements Serializable {
         }
     }
 
-    public String getBewegungsMapJson() {
-        if(bewegungsMap == null) {
+    public String getBewegungsArray() {
+
+        if (bewegungsMap == null) {
             initBewegungsMap();
         }
-        Gson gson = new Gson();
-        return gson.toJson(bewegungsMap);
+
+        String cols = "{id:\"date\",label:\"Datum\",type:\"date\"}";
+
+        for (Bwa bwa : bwas) {
+            cols += ",{id:\"" + bwa.getBwa() + "\",label:\"" + bwa.getBwa() + "\",type:\"number\"}";
+        }
+
+        String rows = "";
+        boolean first = true;
+        for (String dateKey : bewegungsMap.keySet()) {
+            String row = "";
+            if (!first) {
+                row += ",";
+            } else {
+                first = false;
+            }
+            row += "{c:[{v:\"Date(" + dateKey + ")\"}";
+            Map<String, Integer> rowData = bewegungsMap.get(dateKey);
+
+            for (int i = 0; i < bwas.size(); i++) {
+                Bwa bwa = bwas.get(i);
+                String bwaString = bwa.getBwa();
+                Integer value = rowData.get(bwaString);
+                if (value == null) {
+                    value = 0;
+                }
+                row += ",{v:" + value + "}";
+            }
+            row += "]}";
+            rows += row;
+        }
+
+        String all = "{ cols: [" + cols + "], rows: [" + rows + "] }";
+
+        log.info(all);
+
+        return all;
     }
 
 //    public void bla() {
