@@ -5,8 +5,6 @@
  */
 package de.elt.dispotool.view;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import de.elt.dispotool.dao.BewegungDao;
 import de.elt.dispotool.dao.BwaDao;
 import de.elt.dispotool.entities.Bewegung;
@@ -17,8 +15,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
@@ -29,7 +30,6 @@ import lombok.Setter;
 import lombok.Getter;
 import lombok.extern.java.Log;
 import org.apache.commons.lang3.time.DateUtils;
-import org.primefaces.model.chart.BarChartSeries;
 import org.primefaces.model.chart.BarChartModel;
 
 /**
@@ -53,6 +53,7 @@ public class BewegungView implements Serializable {
     List<Bwa> bwas;
     Map<String, Integer> vorzeichen;
     Map<String, Map<String, Integer>> bewegungsMap;
+    Map<String, Integer> bestandsMap;
 
     String materialNummer;
     BarChartModel barChartModel;
@@ -78,6 +79,9 @@ public class BewegungView implements Serializable {
         SimpleDateFormat format = new SimpleDateFormat("yyyy,MM,dd");
         bewegungsMap = new HashMap<>();
         for (Bewegung b : bewegungen) {
+            if (b.getBewegungsart().equals("NICHTS")) {
+                continue;
+            }
             //Date date = b.getBuchungsdatum();
 //            String date = String.valueOf(b.getBuchungsdatum().getTime());
             String date = format.format(b.getBuchungsdatum());
@@ -93,78 +97,85 @@ public class BewegungView implements Serializable {
             } else {
                 log.warning("WARNING!! Mehr als eine Bewegung an einem Datum und einer Bewegunsart! Siehe ColumnChartView. Matnr:" + matNr + ", Bwa:" + bwa + ", datum:" + date);
             }
-            menge += b.getMenge(); //TODO: Vorzeichen dranmultiplizieren.
+            menge += getValue(b);
             series.put(bwa, menge);
         }
     }
 
-    public String getBewegungsArray() {
+    private Date getFirstDate(List<Bewegung> bewegungen) {
+        Date first = new Date();
+        for (Bewegung b : bewegungen) {
+            Date x = b.getBuchungsdatum();
+            if (x.before(first)) {
+                first = x;
+            }
+        }
+        return first;
+    }
+
+    private Date getLastDate(List<Bewegung> bewegungen) {
+        Date last = new Date(0l);
+        for (Bewegung b : bewegungen) {
+            Date x = b.getBuchungsdatum();
+            if (x.after(last)) {
+                last = x;
+            }
+        }
+        return last;
+    }
+
+    private Integer getAnfangsbestand() {
+        return 0;
+    }
+
+    public void initBestandsMap() {
 
         if (bewegungsMap == null) {
             initBewegungsMap();
         }
 
-        String cols = "{id:\"date\",label:\"Datum\",type:\"date\"}";
+        bestandsMap = new HashMap<>();
 
-        for (Bwa bwa : bwas) {
-            cols += ",{id:\"" + bwa.getBwa() + "\",label:\"" + bwa.getBwa() + "\",type:\"number\"}";
-        }
+        String matNr = getMaterialNummer();
+        List<Bewegung> bewegungen = bewegungDao.getByMaterialnummer(matNr);
 
-        String rows = "";
-        boolean first = true;
-        for (String dateKey : bewegungsMap.keySet()) {
-            String row = "";
-            if (!first) {
-                row += ",";
-            } else {
-                first = false;
-            }
-            row += "{c:[{v:\"Date(" + dateKey + ")\"}";
-            Map<String, Integer> rowData = bewegungsMap.get(dateKey);
+        Date first = getFirstDate(bewegungen);
+        Date last = getLastDate(bewegungen);
+        Date lastPlusOne = DateUtils.addDays(last, 1);
+        Integer currentBestand = getAnfangsbestand();
 
-            for (int i = 0; i < bwas.size(); i++) {
-                Bwa bwa = bwas.get(i);
-                String bwaString = bwa.getBwa();
-                Integer value = rowData.get(bwaString);
-                if (value == null) {
-                    value = 0;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy,MM,dd");
+        for (Date day = first; day.before(lastPlusOne); day = DateUtils.addDays(day, 1)) {
+            String dateString = format.format(day);
+            Map<String, Integer> dayBewegungen = bewegungsMap.get(dateString);
+            if (dayBewegungen != null) {
+                for (Entry<String, Integer> entry : dayBewegungen.entrySet()) {
+                    String bwaString = entry.getKey();
+                    Integer menge = entry.getValue();
+                    Integer value = getVorzeichenOfBwa(bwaString) * menge;
+                    currentBestand += value;
+                    log.info("CurrentBestand changed. Now: " + currentBestand);
                 }
-                row += ",{v:" + value + "}";
             }
-            row += "]}";
-            rows += row;
+            bestandsMap.put(dateString, currentBestand);
         }
 
-        String all = "{ cols: [" + cols + "], rows: [" + rows + "] }";
-
-        log.info(all);
-
-        return all;
     }
 
-//    public void bla() {
-//        List<Map> columns = new ArrayList<>();
-//        
-//        columns.add(new HashMap({id:"date", label:"Datum", type:"number"}));
-//        columns.indexOf(bwa);
-//        columns.get(0);
-//        for (Bwa bwa :bwas) {
-//            columns.a
-//        }
-//        
-//    }
-//  public List<String> completeMaterialNummer(String query) {
-//    log.fine("query:" + query);
-//    log.fine("matnr:" + materialNummer);
-//    List<String> results = new ArrayList<>();
-//    for (String mnr : materialNummern) {
-//      if (mnr.contains(query)) {
-//        results.add(mnr);
-//      }
-//    }
-//    log.log(Level.FINE, "completeResults:{0}", results);
-//    return results;
-//  }
+    public String getBewegungsArray() {
+        return makeChartData(bewegungsMap);
+    }
+
+    public String getBestandsArray() {
+        Map<String, Map<String, Integer>> tempMap = new HashMap();
+        for (Entry<String, Integer> entry : bestandsMap.entrySet()) {
+            Map tempMap2 = new HashMap();
+            tempMap2.put("Bestand", entry.getValue());
+            tempMap.put(entry.getKey(), tempMap2);
+        }
+        return makeChartData(tempMap);
+    }
+
     public List<Bwa> getBwasOfMaterial() {
         return getBwasOfMaterial(materialNummer);
     }
@@ -178,7 +189,7 @@ public class BewegungView implements Serializable {
         bwas = getBwasOfMaterial();
         initVorzeichen();
         initBewegungsMap();
-        initChart();
+        initBestandsMap();
     }
 
     void initVorzeichen() {
@@ -186,65 +197,6 @@ public class BewegungView implements Serializable {
         for (Bwa bwa : bwas) {
             vorzeichen.put(bwa.getBwa(), getVorzeichenOfType(bwa.getTyp()));
         }
-    }
-
-    public void initChart() {
-        barChartModel = new BarChartModel();
-        barChartModel.setLegendPosition("ne");
-//    DateAxis axis = new DateAxis();
-//    axis.setTickInterval();
-//    axis.setTickAngle(90);
-//    axis.setTickFormat("%#d.%b %Y");
-//    barChartModel.getAxes().put(AxisType.X, axis);
-        for (Bwa bwa : bwas) {
-            if (getVorzeichenOfType(bwa.getTyp()) != 0) {
-                addSeries(bwa);
-            }
-        }
-
-        //barChartModel.setStacked(true);
-    }
-
-    Map getAccumulatedSeries(List<Bewegung> bewegungen) {
-        Date first = new Date();
-        Date last = new Date(0l);
-        for (Bewegung bewegung : bewegungen) {
-            Date datum = bewegung.getBuchungsdatum();
-            if (datum.before(first)) {
-                first = datum;
-            }
-            if (datum.after(last)) {
-                last = datum;
-            }
-            log.log(Level.FINE, "First Date: {0}, Last Date: {1}, Bewegung: {2}", new Object[]{first, last, bewegung.toString()});
-        }
-        log.log(Level.FINE, "First Date: {0}, Last Date: {1}", new Object[]{first, last});
-
-        List<Date> dates = new ArrayList();
-
-        Date iterator = first;
-        while (iterator.before(last)) {
-            dates.add(iterator);
-            iterator = DateUtils.addDays(iterator, 1);
-        }
-        dates.add(iterator);
-
-        log.fine(dates.toString());
-        Map<Date, Integer> seriesMap = new HashMap();
-
-        for (Date d : dates) {
-            seriesMap.put(d, 0);
-        }
-
-        for (Bewegung bewegung : bewegungen) {
-            int value = getValue(bewegung);
-            Date d = bewegung.getBuchungsdatum();
-            int oldValue = seriesMap.get(d);
-            seriesMap.put(d, oldValue + value);
-            log.log(Level.FINE, "We just added this to the map: {0}: {1}+{2}", new Object[]{d, oldValue, value});
-        }
-
-        return seriesMap;
     }
 
     int getVorzeichenOfBwa(String bwa) {
@@ -270,30 +222,62 @@ public class BewegungView implements Serializable {
         return getVorzeichenOfBwa(bwa) * bewegung.getMenge();
     }
 
-    void addSeries(Bwa bwa) {
+    /**
+     * Method that creates the chart data format that google charts wants:
+     *
+     * var dt = new google.visualization.DataTable({ cols: [{id: 'task', label:
+     * 'Task', type: 'string'}, {id: 'hours', label: 'Hours per Day', type:
+     * 'number'}], rows: [{c:[{v: 'Work'}, {v: 11}]}, {c:[{v: 'Eat'}, {v: 2}]},
+     * {c:[{v: 'Commute'}, {v: 2}]}, {c:[{v: 'Watch TV'}, {v:2}]}, {c:[{v:
+     * 'Sleep'}, {v:7, f:'7.000'}]}] });
+     *
+     * @return String to be passed to DataTable constructor.
+     * @param data A map with Labels, each pointing to a map with dates (in
+     * yyyy,MM,dd format) and values (Integers)
+     */
+    public String makeChartData(Map<String, Map<String, Integer>> data) {
 
-        SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd");
+        String cols = "{id:\"date\",label:\"Datum\",type:\"date\"}";
 
-        BarChartSeries s = new BarChartSeries();
-        s.setLabel(bwa.getBwa());
-        long stamp = System.currentTimeMillis();
-        List<Bewegung> bewegungenOfBwa = bewegungDao.getBewegungen(materialNummer, bwa.getBwa());
-        log.log(Level.INFO, "Query time: {0}", Long.toString(System.currentTimeMillis() - stamp));
+        Set set = new HashSet();
+        for (Map subMap : data.values()) {
+            set.addAll(subMap.keySet());
+        }
+        List<String> labels = new ArrayList(set);
 
-        stamp = System.currentTimeMillis();
-        s.setData(getAccumulatedSeries(bewegungenOfBwa));
-        log.log(Level.INFO, "getAccumulatedSeriesTime: {0}", Long.toString(System.currentTimeMillis() - stamp));
-//    for (Bewegung b : bewegungenOfBwa) {
-//      //s.set(b.getBuchungsdatum(), vorzeichen * b.getMenge());
-//      log.log(Level.FINE, "setting: {0} = {1}", new Object[]{b.getBuchungsdatum(), vorzeichen * b.getMenge()});
-//      
-//      log.log(Level.FINE, "Datum: {0}, Ceiling: {1}", new Object[]{b.getBuchungsdatum(), DateUtils.ceiling(b.getBuchungsdatum(), Calendar.DAY_OF_MONTH)});
-//      
-//      String date = format.format(b.getBuchungsdatum());
-//      log.log(Level.FINE, "{0} = {1}", new Object[]{date, vorzeichen * b.getMenge()});
-//      s.set(date, vorzeichen * b.getMenge());
-//    }
-        barChartModel.addSeries(s);
+        for (String label : labels) {
+            cols += ",{id:\"" + label + "\",label:\"" + label + "\",type:\"number\"}";
+        }
+
+        String rows = "";
+        boolean first = true;
+        for (String dateKey : data.keySet()) {
+            String row = "";
+            if (!first) {
+                row += ",";
+            } else {
+                first = false;
+            }
+            row += "{c:[{v:\"Date(" + dateKey + ")\"}";
+            Map<String, Integer> rowData = data.get(dateKey);
+
+            for (int i = 0; i < labels.size(); i++) {
+                String label = labels.get(i);
+                Integer value = rowData.get(label);
+                if (value == null) {
+                    value = 0;
+                }
+                row += ",{v:" + value + "}";
+            }
+            row += "]}";
+            rows += row;
+        }
+
+        String all = "{ cols: [" + cols + "], rows: [" + rows + "] }";
+
+        log.info(all);
+
+        return all;
     }
 
 }

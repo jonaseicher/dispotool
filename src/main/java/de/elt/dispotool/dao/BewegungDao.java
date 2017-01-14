@@ -55,7 +55,7 @@ public class BewegungDao extends AbstractBaseDao<Bewegung> {
   
 
   public List<String> getMaterialNummern() {
-    String jpql = "select distinct b.materialnummer from Bewegung b where b.materialnummer like '10010%'";
+    String jpql = "select distinct b.materialnummer from Bewegung b"; // where b.materialnummer like '10010%'";
     List matnums = em.createQuery(jpql, String.class).getResultList();
     //log.log(Level.FINE, "matnums:{0}", matnums);
     return matnums;
