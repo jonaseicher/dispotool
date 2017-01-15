@@ -105,7 +105,7 @@ public class BewegungView implements Serializable {
         for (Entry<String, SortedMap<String, Integer>> entry : bewegungsMap.entrySet()) {
             chartMap.put(entry.getKey(), new TreeMap(entry.getValue()));
         }
-        BewegungUtils.addSeries(chartMap, new TreeMap(getBestandsMap()), "_Bestand");
+        BewegungUtils.addSeries(chartMap, new TreeMap(getBestandsMap()), " _Bestand_");
     }
 
     public SortedMap<String, Integer> getBestandsMap() {

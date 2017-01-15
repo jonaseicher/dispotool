@@ -63,11 +63,19 @@ public class MaterialDao extends AbstractBaseDao<Material> {
         Material mat = em.createQuery(jpql, Material.class).setParameter("matNr", matNr).getSingleResult();
         return mat;
     }
-    
-       public Integer getBestand2015(String matNr) {        
+
+    public Integer getBestand2015(String matNr) {
+        return getBestand(matNr, "2015");
+    }
+
+    public Integer getBestand2016(String matNr) {
+        return getBestand(matNr, "2016");
+    }
+
+    private Integer getBestand(String matNr, String year) {
         Integer bestand = 0;
         try {
-            bestand = Integer.valueOf(em.createQuery("select mat.bestand2015 from Material mat where mat.matNr = :matNr", String.class).setParameter("matNr", matNr).getSingleResult());
+            bestand = em.createQuery("select b.bestand" + year + " from Bestand b where b.matNr = :matNr", Integer.class).setParameter("matNr", matNr).getSingleResult();
         } catch (javax.persistence.NoResultException ex) {
             log.info("Kein Anfangsbestand fuer " + matNr + " gefunden.");
         }
