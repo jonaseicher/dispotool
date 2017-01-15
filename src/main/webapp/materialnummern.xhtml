@@ -28,6 +28,19 @@
                         <f:param name="matNr" value="#{matnr}" />
                     </p:link>
                 </p:column>
+                
+                <p:column headerText="Bewegungen">
+                    <p:link outcome="bewegungen" value="Bewegungen">
+                        <f:param name="matNr" value="#{matnr}" />
+                    </p:link>
+                </p:column>
+                
+                
+                <p:column headerText="Reorder Point">
+                    <p:link outcome="reorderpoint" value="Simulieren">
+                        <f:param name="matNr" value="#{matnr}" />
+                    </p:link>
+                </p:column>
 
             </p:dataTable>
 

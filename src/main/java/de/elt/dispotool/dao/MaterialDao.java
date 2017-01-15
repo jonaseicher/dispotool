@@ -1,5 +1,6 @@
 package de.elt.dispotool.dao;
 
+import de.elt.dispotool.entities.Bewegung;
 import de.elt.dispotool.entities.Material;
 import java.util.List;
 import java.util.Map;
@@ -37,13 +38,12 @@ public class MaterialDao extends AbstractBaseDao<Material> {
         log.log(Level.FINE, "filters: {0}", filters.toString());
 
         jpql += " where mat.bestand2016 > 0";
-        
+
         if (filters.containsKey("matNr")) {
             jpql += " and mat.matNr like :matNr";
         }
-        
 
-        TypedQuery<Material> query = em.createQuery(jpql , Material.class).setFirstResult(first).setMaxResults(pageSize);
+        TypedQuery<Material> query = em.createQuery(jpql, Material.class).setFirstResult(first).setMaxResults(pageSize);
 
         if (filters.containsKey("matNr")) {
             query.setParameter("matNr", "%" + filters.get("matNr").toString() + "%");
@@ -56,6 +56,22 @@ public class MaterialDao extends AbstractBaseDao<Material> {
     public int getRowCount() {
         Long i = (Long) em.createNativeQuery("select count(*) from stammdaten where bestand2016 > 0 ").getSingleResult();
         return i.intValue();
+    }
+
+    public Material getByMaterialnummer(String matNr) {
+        String jpql = "select mat from Material mat where mat.matNr = :matNr";
+        Material mat = em.createQuery(jpql, Material.class).setParameter("matNr", matNr).getSingleResult();
+        return mat;
+    }
+    
+       public Integer getBestand2015(String matNr) {        
+        Integer bestand = 0;
+        try {
+            bestand = Integer.valueOf(em.createQuery("select mat.bestand2015 from Material mat where mat.matNr = :matNr", String.class).setParameter("matNr", matNr).getSingleResult());
+        } catch (javax.persistence.NoResultException ex) {
+            log.info("Kein Anfangsbestand fuer " + matNr + " gefunden.");
+        }
+        return bestand;
     }
 
 }

@@ -18,7 +18,7 @@
 
             function drawChart() {
 
-                var data = new google.visualization.DataTable(#{bewegungView.bewegungsArray});
+                var data = new google.visualization.DataTable(#{bewegungView.chartArray});
 
                 // Set chart options
                 var options = {'title': 'Bewegungsdaten von Materialnummer: #{bewegungView.materialNummer}',
@@ -34,8 +34,10 @@
 //                            slantedText: true,
 //                            slantedTextAngle: 30
                     },
+                    seriesType: 'bars',
+//                    series: {1}: {type: 'line'}},
                     bar: {
-                        groupWidth: 12
+                        groupWidth: 20
                     },
                     isStacked: true
                 };
@@ -67,30 +69,15 @@
     </h:head>
     <h:body>
 
+
+
         <h:form id="form">
             <p:growl id="msgs" showDetail="true"/>
 
             <div id="chart_div"></div>
             <div id="chart_div2"></div>
-            
-            <h3>Mehr...</h3>
-<p:panelGrid columns="3" layout="grid">
-    <f:facet name="header">
-        <h:outputText value="LinksOutput" />
-    </f:facet>
-            <p:link outcome="reorderpoint" value="Simulieren">
-                <f:param name="matNr" value="#{bewegungView.materialNummer}" />
-            </p:link>
-            <p:link outcome="materialnummern" value="Andere Materialnummer"/>                        
-            <p:link outcome="stammdaten" value="Stammdaten">
-            </p:link>
-    
-</p:panelGrid>
-            
-            
-
-            
             <!--Bewegungsartentabelle-->
+
             <p:dataTable id="bwaTable" var="bwa" value="#{bewegungView.bwas}" editable="true" editMode="cell" widgetVar="cellBwas">
                 <f:facet name="header">
                     Um den Typ zu editieren, linker Mausklick.
