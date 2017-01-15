@@ -4,116 +4,132 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui">
-  <h:head>
-    <title>Bewegungen</title>
-    
-    <!--Load the AJAX API-->
-            <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-            <script type="text/javascript">
+    <h:head>
+        <title>Bewegungen</title>
 
-                google.charts.load('current', {'packages': ['corechart']});
-                // Set a callback to run when the Google Visualization API is loaded.
-                google.charts.setOnLoadCallback(drawChart);
+        <!--Load the AJAX API-->
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script type="text/javascript">
 
-                function drawChart() {
+            google.charts.load('current', {'packages': ['corechart', 'line']});
+            // Set a callback to run when the Google Visualization API is loaded.
+            google.charts.setOnLoadCallback(drawChart);
 
-                    var data = new google.visualization.DataTable(#{bewegungView.bestandsArray});
+            function drawChart() {
 
-                    // Set chart options
-                    var options = {'title': 'Bewegungsdaten von Materialnummer: #{bewegungView.materialNummer}',
-                        //            'width': 800,
-                        'height': 400,
-                        vAxis: {
-                            title: 'Bewegungsmenge'
-                        },
-                        hAxis: {
-                            title: 'Datum',
-                            format: 'd.MMM yyyy',
+                var data = new google.visualization.DataTable(#{bewegungView.bewegungsArray});
+
+                // Set chart options
+                var options = {'title': 'Bewegungsdaten von Materialnummer: #{bewegungView.materialNummer}',
+                    //            'width': 800,
+                    'height': 400,
+                    vAxis: {
+                        title: 'Bewegungsmenge'
+                    },
+                    hAxis: {
+                        title: 'Datum',
+                        format: 'd.MMM yyyy',
 //                            slantedText: true,
 //                            slantedTextAngle: 30
-                        },
-                        bar: {
-                            groupWidth: 12
-                        },
-                        isStacked: true
-                    };
+                    },
+                    bar: {
+                        groupWidth: 12
+                    },
+                    isStacked: true
+                };
 
-                    // Instantiate and draw our chart, passing in some options.
-                    var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
-                    chart.draw(data, options);
-                }
-            </script>
-  </h:head>
-  <h:body>
+                // Instantiate and draw our chart, passing in some options.
+                var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+                chart.draw(data, options);
 
+//                var lineData = new google.visualization.DataTable(#      {bewegungView.bestandsArray});
+//
+//                var lineOptions = {
+//                    hAxis: {
+//                        title: 'Datum'
+//                    },
+//                    vAxis: {
+//                        title: 'Bestand'
+//                    }
+//                };
+//
+//                var lineChart = new google.visualization.ColumnChart(document.getElementById('chart_div2'));
+//
+//                lineChart.draw(lineData, lineOptions);
+            }
 
-
-    <h:form id="form">
-      <p:growl id="msgs" showDetail="true"/>
-
-      <div id="chart_div"></div>
-
-<!--Bewegungsartentabelle-->
-
-      <p:dataTable id="bwaTable" var="bwa" value="#{bewegungView.bwas}" editable="true" editMode="cell" widgetVar="cellBwas">
-        <f:facet name="header">
-          Um den Typ zu editieren, linker Mausklick.
-        </f:facet>
-
-        <p:ajax event="cellEdit" listener="#{bwaEditView.onCellEdit}" update=":form:msgs" />
-
-        <p:column headerText="BWA">
-          <h:outputText value="#{bwa.bwa}" />
-        </p:column>
-
-        <p:column headerText="Bewegung">
-          <h:outputText value="#{bwa.bewegung}" />
-        </p:column>
-
-        <p:column headerText="Bezeichnung">
-          <h:outputText value="#{bwa.bezeichnung}" />
-        </p:column>
-
-        <p:column headerText="Typ">
-          <p:cellEditor>
-            <f:facet name="output"><h:outputText value="#{bwa.typ}" /></f:facet>
-            <f:facet name="input">
-              <h:selectOneMenu value="#{bwa.typ}" style="width:100%">
-                <f:selectItems value="#{bwaEditView.types}" var="typ" itemLabel="#{typ}" itemValue="#{typ}" />
-              </h:selectOneMenu>
-            </f:facet>
-          </p:cellEditor>
-        </p:column>
-      </p:dataTable>
-
-<!--Bewegungen-->
+        </script>
+    </h:head>
+    <h:body>
 
 
-    <p:dataTable id="bewegungTable" var="bewegung" value="#{bewegungView.bewegungen}">
-        <f:facet name="header">
-          Bewegungen des Materials
-        </f:facet>
 
-        <p:column headerText="Datum">
-          <h:outputText value="#{bewegung.buchungsdatum}" />
-        </p:column>
+        <h:form id="form">
+            <p:growl id="msgs" showDetail="true"/>
 
-        <p:column headerText="Menge">
-          <h:outputText value="#{bewegung.menge}" />
-        </p:column>
+            <div id="chart_div"></div>
+            <div id="chart_div2"></div>
+            <!--Bewegungsartentabelle-->
 
-        <p:column headerText="BWA">
-          <h:outputText value="#{bewegung.bewegungsart}" />
-        </p:column>
+            <p:dataTable id="bwaTable" var="bwa" value="#{bewegungView.bwas}" editable="true" editMode="cell" widgetVar="cellBwas">
+                <f:facet name="header">
+                    Um den Typ zu editieren, linker Mausklick.
+                </f:facet>
 
-        <p:column headerText="Lagerort">
-          <h:outputText value="#{bewegung.lagerort}" />
-        </p:column>
+                <p:ajax event="cellEdit" listener="#{bwaEditView.onCellEdit}" update=":form:msgs" />
 
-      </p:dataTable>
+                <p:column headerText="BWA">
+                    <h:outputText value="#{bwa.bwa}" />
+                </p:column>
+
+                <p:column headerText="Bewegung">
+                    <h:outputText value="#{bwa.bewegung}" />
+                </p:column>
+
+                <p:column headerText="Bezeichnung">
+                    <h:outputText value="#{bwa.bezeichnung}" />
+                </p:column>
+
+                <p:column headerText="Typ">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{bwa.typ}" /></f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{bwa.typ}" style="width:100%">
+                                <f:selectItems value="#{bwaEditView.types}" var="typ" itemLabel="#{typ}" itemValue="#{typ}" />
+                            </h:selectOneMenu>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+            </p:dataTable>
+
+            <!--Bewegungen-->
 
 
-    </h:form>
-  </h:body>
+            <p:dataTable id="bewegungTable" var="bewegung" value="#{bewegungView.bewegungen}">
+                <f:facet name="header">
+                    Bewegungen des Materials
+                </f:facet>
+
+                <p:column headerText="Datum">
+                    <h:outputText value="#{bewegung.buchungsdatum}" />
+                </p:column>
+
+                <p:column headerText="Menge">
+                    <h:outputText value="#{bewegung.menge}" />
+                </p:column>
+
+                <p:column headerText="BWA">
+                    <h:outputText value="#{bewegung.bewegungsart}" />
+                </p:column>
+
+                <p:column headerText="Lagerort">
+                    <h:outputText value="#{bewegung.lagerort}" />
+                </p:column>
+
+            </p:dataTable>
+
+
+        </h:form>
+    </h:body>
 </html>
