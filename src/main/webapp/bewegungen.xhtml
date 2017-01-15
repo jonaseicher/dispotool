@@ -43,22 +43,21 @@
                 var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
                 chart.draw(data, options);
 
-//                var lineData = new google.visualization.DataTable(#      {bewegungView.bestandsArray});
-//
-//                var lineOptions = {
-//                    hAxis: {
-//                        title: 'Datum'
-//                    },
-//                    vAxis: {
-//                        title: 'Bestand'
-//                    }
-//                };
-//
-//                var lineChart = new google.visualization.ColumnChart(document.getElementById('chart_div2'));
-//
-//                lineChart.draw(lineData, lineOptions);
-            }
+                var lineData = new google.visualization.DataTable(#{bewegungView.bestandsArray});
 
+                var lineOptions = {
+                    hAxis: {
+                        title: 'Datum'
+                    },
+                    vAxis: {
+                        title: 'Bestand'
+                    }
+                };
+
+                var lineChart = new google.visualization.LineChart(document.getElementById('chart_div2'));
+
+                lineChart.draw(lineData, lineOptions);
+            }
         </script>
     </h:head>
     <h:body>

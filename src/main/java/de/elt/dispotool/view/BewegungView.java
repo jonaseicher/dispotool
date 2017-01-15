@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
@@ -166,7 +167,7 @@ public class BewegungView implements Serializable {
     }
 
     public String getBestandsArray() {
-        Map<String, Map<String, Integer>> tempMap = new HashMap();
+        Map<String, Map<String, Integer>> tempMap = new TreeMap();
         for (Entry<String, Integer> entry : bestandsMap.entrySet()) {
             Map tempMap2 = new HashMap();
             tempMap2.put("Bestand", entry.getValue());
