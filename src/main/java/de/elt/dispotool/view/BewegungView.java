@@ -152,12 +152,12 @@ public class BewegungView implements Serializable {
                 for (Entry<String, Integer> entry : dayBewegungen.entrySet()) {
                     String bwaString = entry.getKey();
                     Integer menge = entry.getValue();
-                    Integer value = getVorzeichenOfBwa(bwaString) * menge;
-                    currentBestand += value;
-                    log.info("CurrentBestand changed. Now: " + currentBestand);
+                    currentBestand += menge;
+                    log.log(Level.INFO, "CurrentBestand changed. Date: {0}, Bestand: {1}", new Object[]{dateString, currentBestand});
                 }
             }
             bestandsMap.put(dateString, currentBestand);
+//            log.log(Level.INFO, "Date and Bestand: {0}: {1}", new Object[]{dateString, currentBestand});
         }
 
     }
