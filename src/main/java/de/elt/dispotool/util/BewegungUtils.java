@@ -36,33 +36,32 @@ public class BewegungUtils {
                 return 0;
         }
     }
-    
-    
-    
-       public static SortedMap<String, SortedMap<String, Integer>> makeEmptyMap(Date first, Date last) {
-        
-        SortedMap<String, SortedMap<String, Integer>>  map = new TreeMap();
+
+    public static SortedMap<String, SortedMap<String, Integer>> makeEmptyMap(Date first, Date last) {
+
+        SortedMap<String, SortedMap<String, Integer>> map = new TreeMap();
         Date lastPlusOne = DateUtils.addDays(last, 1);
-        
+
         SimpleDateFormat format = new SimpleDateFormat("yyyy,MM,dd");
         for (Date day = first; day.before(lastPlusOne); day = DateUtils.addDays(day, 1)) {
             String dateString = format.format(day);
-            map.put(dateString, new TreeMap<>());           
+            map.put(dateString, new TreeMap<>());
         }
         return map;
     }
-    
-    public static void addSeries(SortedMap<String, SortedMap<String,Integer>> toMap, Map<String, Integer> series, String label) {
-        
-        for (Map.Entry<String, SortedMap<String,Integer>> entry : toMap.entrySet()) {
+
+    public static void addSeries(SortedMap<String, SortedMap<String, Integer>> toMap, Map<String, Integer> series, String label) {
+
+        for (Map.Entry<String, SortedMap<String, Integer>> entry : toMap.entrySet()) {
             String dateString = entry.getKey();
-            if (series.get(dateString) == null) { continue; }
-            Map<String,Integer> subMap = entry.getValue();
-            subMap.put(label, series.get(dateString));
+            if (series.containsKey(dateString)) {
+                Map<String, Integer> subMap = entry.getValue();
+                subMap.put(label, series.get(dateString));
+            }
         }
     }
-    
-        // TODO: make combined method for initializing date fields first last
+
+    // TODO: make combined method for initializing date fields first last
     public static Date getFirstDate(List<Bewegung> bewegungen) {
         Date first = new Date();
         for (Bewegung b : bewegungen) {
@@ -84,6 +83,5 @@ public class BewegungUtils {
         }
         return last;
     }
-    
-    
+
 }

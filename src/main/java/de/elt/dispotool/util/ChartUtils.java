@@ -6,11 +6,10 @@
 package de.elt.dispotool.util;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import lombok.extern.java.Log;
 
 /**
@@ -37,7 +36,7 @@ public class ChartUtils {
 
         String cols = "{id:\"date\",label:\"Datum\",type:\"date\"}";
 
-        Set set = new HashSet();
+        SortedSet set = new TreeSet();
         for (SortedMap subMap : data.values()) {
             set.addAll(subMap.keySet());
         }
@@ -62,9 +61,6 @@ public class ChartUtils {
             for (int i = 0; i < labels.size(); i++) {
                 String label = labels.get(i);
                 Integer value = rowData.get(label);
-                if (value == null) {
-                    value = 0;
-                }
                 row += ",{v:" + value + "}";
             }
             row += "]}";

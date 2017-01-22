@@ -97,7 +97,7 @@ public class BewegungView implements Serializable {
         for (Entry<String, SortedMap<String, Integer>> entry : bewegungsMap.entrySet()) {
             chartMap.put(entry.getKey(), new TreeMap(entry.getValue()));
         }
-        BewegungUtils.addSeries(chartMap, new TreeMap(getBestandsMap()), " _Bestand_");
+        BewegungUtils.addSeries(chartMap, new TreeMap(getBestandsMap()), " Bestand");
         log.info("ChartMap: " + chartMap.toString());
     }
 
@@ -199,9 +199,9 @@ public class BewegungView implements Serializable {
     }
 
     private SortedMap<String, Integer> getBewegungenAsMap(String bwa) {
-        List<Bewegung> bewegungen = bewegungDao.getBewegungen(materialNummer, bwa);
+        List<Bewegung> bewegungenOfBwa = bewegungDao.getBewegungen(materialNummer, bwa);
         SortedMap<String, Integer> map = new TreeMap();
-        for (Bewegung b : bewegungen) {
+        for (Bewegung b : bewegungenOfBwa) {
             map.put(b.getDateString(), getValue(b));
         }
         return map;
