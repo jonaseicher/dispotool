@@ -34,12 +34,18 @@
 //                            slantedText: true,
 //                            slantedTextAngle: 30
                     },
-//                    seriesType: 'bars',
-//                    series: {1}: {type: 'line'}},
+                    seriesType: 'bars',
                     bar: {
-                        groupWidth: 20
+                        groupWidth: '150%'
                     },
-                    //isStacked: true
+                    isStacked: true,
+                    series: {
+                        0: {
+                            type: 'line',
+                            lineWidth: 0.5,
+                            color: 'blue'  
+                        }
+                    },
                 };
 
                 // Instantiate and draw our chart, passing in some options.

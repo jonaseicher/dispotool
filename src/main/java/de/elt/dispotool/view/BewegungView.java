@@ -16,6 +16,7 @@ import de.elt.dispotool.util.Constants;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -57,6 +58,8 @@ public class BewegungView implements Serializable {
     MaterialDao materialDao;
 
     List<Bewegung> bewegungen;
+    List<Bewegung> zugaenge;
+    List<Bewegung> abgaenge;
     Date first, last;
     List<Bwa> bwas;
     Map<String, Integer> vorzeichen;
@@ -72,18 +75,7 @@ public class BewegungView implements Serializable {
     public void init() {
         Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         String matNr = params.get("matNr");
-        if (matNr == null) {
-            log.warning("materialnummer was null. setting default value.");
-            matNr = "64365703";
-        }
-        bewegungen = bewegungDao.getByMaterialnummer(matNr);
-        if (bewegungen == null || bewegungen.size() == 0) {
-            try {
-                FacesContext.getCurrentInstance().getExternalContext().redirect("materialnummern.xhtml");
-            } catch (IOException ex) {
-                Logger.getLogger(BewegungView.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+
         setMaterialNummer(matNr);
     }
 
@@ -106,6 +98,7 @@ public class BewegungView implements Serializable {
             chartMap.put(entry.getKey(), new TreeMap(entry.getValue()));
         }
         BewegungUtils.addSeries(chartMap, new TreeMap(getBestandsMap()), " _Bestand_");
+        log.info("ChartMap: " + chartMap.toString());
     }
 
     public SortedMap<String, Integer> getBestandsMap() {
@@ -115,13 +108,48 @@ public class BewegungView implements Serializable {
         return bestandsMap;
     }
 
+//    private Integer getAnfangsbestand2() {
+//        String matNum = getMaterialNummer();
+//        Integer bestand = materialDao.getBestand2015(matNum);
+//        if (bestand == null) {
+//            bestand = 0;
+//        }
+//        return bestand;
+//    }
+
     private Integer getAnfangsbestand() {
-        String matNum = getMaterialNummer();
-        Integer bestand = materialDao.getBestand2015(matNum);
+        Integer bestand = materialDao.getBestand2016(materialNummer);
         if (bestand == null) {
             bestand = 0;
         }
+
+        for (Bewegung zu : zugaenge) {
+            bestand -= zu.getMenge();
+        }
+        for (Bewegung ab : abgaenge) {
+            bestand += ab.getMenge();
+        }
         return bestand;
+    }
+
+    private void initZuAbgaenge(String matNr) {
+        zugaenge = new ArrayList<>();
+        abgaenge = new ArrayList<>();
+        for (Bewegung b : bewegungen) {
+            int vorzeichen = getVorzeichen().get(b.getBewegungsart());
+            switch (vorzeichen) {
+                case 0:
+                    break;
+                case 1:
+                    zugaenge.add(b);
+                    break;
+                case -1:
+                    abgaenge.add(b);
+                    break;
+                default:
+                    log.warning("Default Case in Vorzeichen switch! Value was: " + vorzeichen);
+            }
+        }
     }
 
     public void initBestandsMap() {
@@ -132,9 +160,8 @@ public class BewegungView implements Serializable {
 
         bestandsMap = new TreeMap<>();
 
-        String matNr = getMaterialNummer();
-        List<Bewegung> bewegungen = bewegungDao.getByMaterialnummer(matNr);
-
+//        String matNr = getMaterialNummer();
+//        bewegungen = bewegungDao.getByMaterialnummer(matNr);
         Date lastPlusOne = DateUtils.addDays(last, 1);
         Integer currentBestand = getAnfangsbestand();
 
@@ -189,11 +216,24 @@ public class BewegungView implements Serializable {
     }
 
     public void setMaterialNummer(String matnr) {
+        if (matnr == null) {
+            log.warning("materialnummer was null. setting default value.");
+            matnr = "64365703";
+        }
+        bewegungen = bewegungDao.getByMaterialnummer(matnr);
+        if (bewegungen == null || bewegungen.isEmpty()) {
+            try {
+                FacesContext.getCurrentInstance().getExternalContext().redirect("materialnummern.xhtml");
+            } catch (IOException ex) {
+                Logger.getLogger(BewegungView.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         materialNummer = matnr;
         first = BewegungUtils.getFirstDate(bewegungen);
         last = BewegungUtils.getLastDate(bewegungen);
         bwas = getBwasOfMaterial();
         initVorzeichen();
+        initZuAbgaenge(materialNummer);
         initBewegungsMap();
         initBestandsMap();
         initChartMap();
