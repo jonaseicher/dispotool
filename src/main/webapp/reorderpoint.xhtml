@@ -83,6 +83,21 @@
             <div id="chart_div"></div>
             <div id="chart_div2"></div>
             <!--Bewegungsartentabelle-->
+            <h:panelGrid columns="2" cellpadding="5" styleClass="ui-grid">
+        
+            <h:outputText value="Bestelldauer in Tagen:"/>
+            <p:spinner value="#{bewegungView.abgangsInterval}">
+                <p:ajax update="maxAbgang" process="@this" />
+            </p:spinner>
+            
+            <h:outputText value="Max Abgangsmenge:"/>
+            <h:outputText id="maxAbgang" value="#{bewegungView.getMaxAbgangsmenge()}"/>
+            
+            <h:outputText value="Bestellmenge:"/>
+            <p:spinner value="#{bewegungView.bestellmenge}">
+                <!--<p:ajax update="" process="@this" />-->
+            </p:spinner>
+    </h:panelGrid>
 
         </h:form>
     </h:body>
