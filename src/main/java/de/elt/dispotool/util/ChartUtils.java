@@ -55,7 +55,13 @@ public class ChartUtils {
             } else {
                 first = false;
             }
-            row += "{c:[{v:\"Date(" + dateKey + ")\"}";
+            String[] dateArr = dateKey.split(",");
+            Integer month = Integer.valueOf(dateArr[1]);
+            month--;
+            
+            String fixedDate = dateArr[0] + ","+month + "," + dateArr[2];
+            
+            row += "{c:[{v:\"Date(" + fixedDate + ")\"}";
             SortedMap<String, Integer> rowData = data.get(dateKey);
 
             for (int i = 0; i < labels.size(); i++) {

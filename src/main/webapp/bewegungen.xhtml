@@ -34,10 +34,15 @@
 //                            slantedText: true,
 //                            slantedTextAngle: 30
                     },
-                    bar: {
-                        groupWidth: 12
-                    },
-                    isStacked: true
+//                    bar: {
+//                        groupWidth: 12
+//                    },
+                    isStacked: true,
+                    explorer: {
+                        maxZoomOut: 1.2,
+                        maxZoomIn: 6,
+                        keepInBounds: true
+                    }
                 };
 
                 // Instantiate and draw our chart, passing in some options.
@@ -56,6 +61,11 @@
                     vAxis: {
                         title: 'Bestand',
                         minValue: 0
+                    },
+                    explorer: {
+                        maxZoomOut: 1.2,
+                        maxZoomIn: 6,
+                        keepInBounds: true
                     }
                 };
 

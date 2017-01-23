@@ -21,8 +21,9 @@
                 var data = new google.visualization.DataTable(#{bewegungView.chartArray});
 
                 // Set chart options
-                var options = {'title': 'Bewegungsdaten von Materialnummer: #{bewegungView.materialNummer}',
-                    //            'width': 800,
+                var options = {
+                    'title': 'Bewegungsdaten von Materialnummer: #{bewegungView.materialNummer}',
+                    // 'width': 800,
                     'height': 400,
                     vAxis: {
                         title: 'Bewegungsmenge',
@@ -35,17 +36,22 @@
 //                            slantedTextAngle: 30
                     },
                     seriesType: 'bars',
-                    bar: {
-                        groupWidth: '150%'
-                    },
+//                    bar: {
+//                        groupWidth: 100
+//                    },
                     isStacked: true,
                     series: {
                         0: {
                             type: 'line',
                             lineWidth: 0.5,
-                            color: 'blue'  
+                            color: 'blue'
                         }
                     },
+                    explorer: {
+                        maxZoomOut: 1.2,
+                        maxZoomIn: 6,
+                        keepInBounds: true
+                    }
                 };
 
                 // Instantiate and draw our chart, passing in some options.
@@ -64,6 +70,11 @@
                     vAxis: {
                         title: 'Bestand',
                         minValue: 0
+                    },
+                    explorer: {
+                        maxZoomOut: 1.2,
+                        maxZoomIn: 6,
+                        keepInBounds: true
                     }
                 };
 
@@ -84,20 +95,20 @@
             <div id="chart_div2"></div>
             <!--Bewegungsartentabelle-->
             <h:panelGrid columns="2" cellpadding="5" styleClass="ui-grid">
-        
-            <h:outputText value="Bestelldauer in Tagen:"/>
-            <p:spinner value="#{bewegungView.abgangsInterval}">
-                <p:ajax update="maxAbgang" process="@this" />
-            </p:spinner>
-            
-            <h:outputText value="Max Abgangsmenge:"/>
-            <h:outputText id="maxAbgang" value="#{bewegungView.getMaxAbgangsmenge()}"/>
-            
-            <h:outputText value="Bestellmenge:"/>
-            <p:spinner value="#{bewegungView.bestellmenge}">
-                <!--<p:ajax update="" process="@this" />-->
-            </p:spinner>
-    </h:panelGrid>
+
+                <h:outputText value="Bestelldauer in Tagen:"/>
+                <p:spinner value="#{bewegungView.abgangsInterval}">
+                    <p:ajax update="maxAbgang" process="@this" />
+                </p:spinner>
+
+                <h:outputText value="Max Abgangsmenge:"/>
+                <h:outputText id="maxAbgang" value="#{bewegungView.getMaxAbgangsmenge()}"/>
+
+                <h:outputText value="Bestellmenge:"/>
+                <p:spinner value="#{bewegungView.bestellmenge}">
+                    <!--<p:ajax update="" process="@this" />-->
+                </p:spinner>
+            </h:panelGrid>
 
         </h:form>
     </h:body>
