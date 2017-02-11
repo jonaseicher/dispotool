@@ -25,7 +25,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
 import javax.ejb.Stateful;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -64,6 +63,7 @@ public class BewegungService {
     SortedMap<String, SortedMap<String, Integer>> bewegungsMap;
     SortedMap<String, Integer> bestandsMap;
     SortedMap<String, SortedMap<String, Integer>> chartMap;
+    Map<String, Integer> bwaMengen;
 
     String materialNummer;
     BarChartModel barChartModel;
@@ -221,6 +221,7 @@ public class BewegungService {
         first = BewegungUtils.getFirstDate(bewegungen);
         last = BewegungUtils.getLastDate(bewegungen);
         bwas = getBwasOfMaterial();
+        bwaMengen = bewegungDao.getBwaMengen(materialNummer);
         initVorzeichen();
         initZuAbgaenge();
         initBewegungsMap();
@@ -287,6 +288,10 @@ public class BewegungService {
         }
 
         return maxAbgang;
+    }
+    
+    public Integer getMengeOfBwa(String bwa) {
+        return getBwaMengen().get(bwa);        
     }
 
 }

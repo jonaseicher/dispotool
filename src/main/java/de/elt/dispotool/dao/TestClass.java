@@ -7,6 +7,10 @@ package de.elt.dispotool.dao;
 
 import java.util.HashMap;
 import java.util.Map;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import lombok.extern.java.Log;
 
 /**
  *
@@ -14,6 +18,7 @@ import java.util.Map;
  */
 public class TestClass {
     
+        
     public static void main (String[] args) {
         
         Integer i = 20;
@@ -23,5 +28,9 @@ public class TestClass {
         i=10;
         System.out.println(m.get("asdf"));
         System.out.println(i);
+        
+        
     }
+    
+    
 }

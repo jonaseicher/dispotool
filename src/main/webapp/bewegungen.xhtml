@@ -119,6 +119,10 @@
                 <p:column headerText="Bezeichnung">
                     <h:outputText value="#{bwa.bezeichnung}" />
                 </p:column>
+                
+                <p:column headerText="Bewegungsmenge">
+                    <h:outputText value="#{bewegungView.getMengeOfBwa(bwa.bwa)}" />
+                </p:column>
 
                 <p:column headerText="Typ">
                     <p:cellEditor>
