@@ -47,13 +47,13 @@ public class BewegungView implements Serializable {
         bewegungService.setMaterialNummer(matNr);
     }
     
-    @Getter
-    int bestellmenge = 1000;
-    public void setBestellmenge(int newValue) {
-        bestellmenge = newValue;
-        //bewegungService.setMaterialNummer("10010844");
+    public Integer getBestellmenge() {
+        return bewegungService.getBestellmenge();
     }
-
+    
+    public void setBestellmenge(Integer x) {
+        bewegungService.setBestellmenge(x);
+    }
     public void initBewegungsMap() {
         bewegungService.initBewegungsMap();
     }
@@ -242,6 +242,8 @@ public class BewegungView implements Serializable {
         bewegungService.setTypes(types);
     }
     
-    
+    public String getSimBestandsArray() {
+        return bewegungService.getSimBestandsArray();
+    }
     
 }

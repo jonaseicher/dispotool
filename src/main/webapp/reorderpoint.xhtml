@@ -18,82 +18,104 @@
 
             function drawChart() {
 
-                var data = new google.visualization.DataTable(#{bewegungView.chartArray});
+                drawBewegungsChart(#{bewegungView.chartArray});
 
-                // Set chart options
-                var options = {
-                    'title': 'Bewegungsdaten von Materialnummer: #{bewegungView.materialNummer}',
-                    // 'width': 800,
-                    'height': 400,
-                    vAxis: {
-                        title: 'Bewegungsmenge',
-                        minValue: 0
-                    },
-                    hAxis: {
-                        title: 'Datum',
-                        format: 'd.MMM yyyy'
-//                            slantedText: true,
-//                            slantedTextAngle: 30
-                    },
-                    seriesType: 'bars',
-//                    bar: {
-//                        groupWidth: 100
-//                    },
-                    isStacked: true,
-                    series: {
-                        0: {
-                            type: 'line',
-                            lineWidth: 0.5,
-                            color: 'blue'
-                        }
-                    },
-                    explorer: {
-                        maxZoomOut: 1,
-                        maxZoomIn: 8,
-                        keepInBounds: true
-                    }
-                };
+                drawBestandsChart(#{bewegungView.bestandsArray});
 
-                // Instantiate and draw our chart, passing in some options.
-                var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
-                chart.draw(data, options);
+                drawSimChart(#{bewegungView.simBestandsArray});
 
-                var lineData = new google.visualization.DataTable(#{bewegungView.bestandsArray});
-
-                var lineOptions = {'title': 'Bestandsverlauf von Materialnummer: #{bewegungView.materialNummer}',
-                    //            'width': 800,
-                    'height': 400,
-                    hAxis: {
-                        title: 'Datum',
-                        format: 'd.MMM yyyy'
-                    },
-                    vAxis: {
-                        title: 'Bestand',
-                        minValue: 0
-                    },
-                    explorer: {
-                        maxZoomOut: 1,
-                        maxZoomIn: 8,
-                        keepInBounds: true
-                    }
-                };
-
-                var lineChart = new google.visualization.AreaChart(document.getElementById('chart_div2'));
-
-                lineChart.draw(lineData, lineOptions);
             }
+            var bewegungsChartOptions = {
+                'title': 'Reale Bewegungsdaten von Materialnummer: #{bewegungView.materialNummer}',
+                'height': 400,
+                vAxis: {
+                    title: 'Bewegungsmenge',
+                    minValue: 0
+                },
+                hAxis: {
+                    title: 'Datum',
+                    format: 'd.MMM yyyy'
+                },
+                seriesType: 'bars',
+                isStacked: true,
+                series: {
+                    0: {
+                        type: 'line',
+                        lineWidth: 0.5,
+                        color: 'blue'
+                    }
+                },
+                explorer: {
+                    maxZoomOut: 1,
+                    maxZoomIn: 8,
+                    keepInBounds: true
+                }
+            };
+
+
+            var simChartOptions = {'title': 'Bestandsverlauf mit simulierten Bestellungen für Materialnummer: #{bewegungView.materialNummer}',
+                'height': 400,
+                hAxis: {
+                    title: 'Datum',
+                    format: 'd.MMM yyyy'
+                },
+                vAxis: {
+                    title: 'Bestand',
+                    minValue: 0
+                },
+                seriesType: 'bars',
+                isStacked: true,
+                series: {
+                    0: {
+                        type: 'line',
+                        lineWidth: 0.5,
+                        color: 'blue'
+                    }
+                },
+                explorer: {
+                    maxZoomOut: 1,
+                    maxZoomIn: 8,
+                    keepInBounds: true
+                }
+            };
+            var simChart;
+            var simChartData;
+
+            function drawBewegungsChart(data) {
+                var chartData = new google.visualization.DataTable(data);
+                var chart = new google.visualization.ComboChart(document.getElementById('chart_div_real'));
+                chart.draw(chartData, bewegungsChartOptions);
+
+            }
+
+//            function drawBestandsChart(data) {
+//
+//                var chartData = new google.visualization.DataTable(data);
+//                var chart = new google.visualization.AreaChart(document.getElementById('chart_div2'));
+//                chart.draw(chartData, bestandsChartOptions);
+//            }
+
+            function drawSimChart(data) {
+
+                var chartData = new google.visualization.DataTable(data);
+                simChart = new google.visualization.ComboChart(document.getElementById('chart_div_sim'));
+                simChart.draw(chartData, simChartOptions);
+            }
+
+            function redrawSimChart(data) {
+                simChartData = new google.visualization.DataTable(data);
+                simChart.draw(simChartData, simChartOptions);
+            }
+
         </script>
     </h:head>
     <h:body>
 
 
-
         <h:form id="form">
             <p:growl id="msgs" showDetail="true"/>
 
-            <div id="chart_div"></div>
-            <div id="chart_div2"></div>
-            <!--Bewegungsartentabelle-->
+            <div id="chart_div_sim"></div>
             <h:panelGrid columns="2" cellpadding="5" styleClass="ui-grid">
 
                 <h:outputText value="Bestelldauer in Tagen:"/>
@@ -104,11 +126,20 @@
                 <h:outputText value="Max Abgangsmenge:"/>
                 <h:outputText id="maxAbgang" value="#{bewegungView.getMaxAbgangsmenge()}"/>
 
+
                 <h:outputText value="Bestellmenge:"/>
                 <p:spinner value="#{bewegungView.bestellmenge}">
-                    <!--<p:ajax update="" process="@this" />-->
+                    <p:ajax process="@this" />
                 </p:spinner>
+
+                <h:form id="redrawButtonForm">
+                    <h:commandButton value="Redraw Chart"
+                                     onclick="redrawSimChart(#{bewegungView.getSimBestandsArray()})"/>
+                </h:form>
             </h:panelGrid>
+
+            <div id="chart_div_real"></div>
+
 
         </h:form>
     </h:body>

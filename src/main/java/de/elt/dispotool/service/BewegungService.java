@@ -61,9 +61,14 @@ public class BewegungService {
     List<Bwa> bwas;
     Map<String, Integer> vorzeichen;
     SortedMap<String, SortedMap<String, Integer>> bewegungsMap;
+    SortedMap<String, SortedMap<String, Integer>> abgangsMap;
+    SortedMap<String, Integer> simZugangsMap;
     SortedMap<String, Integer> bestandsMap;
+    SortedMap<String, Integer> simBestandsMap;
     SortedMap<String, SortedMap<String, Integer>> chartMap;
+    SortedMap<String, SortedMap<String, Integer>> simChartMap;
     Map<String, Integer> bwaMengen;
+    Integer bestellmenge;
 
     String materialNummer;
     BarChartModel barChartModel;
@@ -82,6 +87,19 @@ public class BewegungService {
         }
     }
 
+    public void initAbgangsMap() {
+        abgangsMap = BewegungUtils.makeEmptyMap(first, last);
+
+        for (Bwa bwa : bwas) {
+            String bwaString = bwa.getBwa();
+            if (getVorzeichen().get(bwaString) != -1) {
+                continue;
+            }
+            Map<String, Integer> series = getBewegungenAsMap(bwaString);
+            BewegungUtils.addSeries(abgangsMap, series, bwaString);
+        }
+    }
+
     public void initChartMap() {
         chartMap = new TreeMap();
         for (Map.Entry<String, SortedMap<String, Integer>> entry : bewegungsMap.entrySet()) {
@@ -96,6 +114,13 @@ public class BewegungService {
             initBestandsMap();
         }
         return bestandsMap;
+    }
+
+    public SortedMap<String, Integer> getSimBestandsMap() {
+        if (simBestandsMap == null) {
+            initSimBestandsMap();
+        }
+        return simBestandsMap;
     }
 
 //    private Integer getAnfangsbestand2() {
@@ -168,6 +193,45 @@ public class BewegungService {
             bestandsMap.put(dateString, currentBestand);
             log.log(Level.FINER, "Date and Bestand: {0}: {1}", new Object[]{dateString, currentBestand});
         }
+    }
+
+    public void initSimBestandsMap() {
+        Integer ordered = 0;
+        if (abgangsMap == null) {
+            initBewegungsMap();
+        }
+//        simZugangsMap = new TreeMap<>();
+        simZugangsMap = BewegungUtils.makeEmpty1Map(first, last);
+        simBestandsMap = new TreeMap<>();
+        Integer abgangsInterval = getAbgangsInterval();
+        Integer maxAbgangsmenge = getMaxAbgangsmenge(abgangsInterval);
+        Date lastPlusOne = DateUtils.addDays(last, 1);
+        Integer currentBestand = getAnfangsbestand();
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy,MM,dd");
+        for (Date day = first; day.before(lastPlusOne); day = DateUtils.addDays(day, 1)) {
+            String dateString = format.format(day);
+            SortedMap<String, Integer> dayBewegungen = abgangsMap.get(dateString);
+            if (dayBewegungen != null) {
+                for (Map.Entry<String, Integer> entry : dayBewegungen.entrySet()) {
+                    Integer menge = entry.getValue();
+                    currentBestand += menge;
+                }
+                Integer zugang = simZugangsMap.get(dateString);
+                if (zugang != null) {
+                    currentBestand += zugang;
+                    ordered -= zugang;
+                }
+            }
+            simBestandsMap.put(dateString, currentBestand);
+            if (currentBestand + ordered <= maxAbgangsmenge) {
+                Date nowPlusInterval = DateUtils.addDays(day, abgangsInterval);
+                String arrivalDate = format.format(nowPlusInterval);
+                simZugangsMap.put(arrivalDate, bestellmenge);
+                ordered += bestellmenge;
+            }
+            log.log(Level.FINER, "Date and Bestand: {0}: {1}", new Object[]{dateString, currentBestand});
+        }
 
     }
 
@@ -182,8 +246,15 @@ public class BewegungService {
     public String getBestandsArray() {
         SortedMap<String, SortedMap<String, Integer>> tempMap = BewegungUtils.makeEmptyMap(first, last);
         BewegungUtils.addSeries(tempMap, bestandsMap, "Bestand");
-        Map testSeries = getBewegungenAsMap(bwas.get(0).getBwa());
+        //Map testSeries = getBewegungenAsMap(bwas.get(0).getBwa());
 //        BewegungUtils.addSeries(tempMap, testSeries, "BestandTest");
+        return ChartUtils.makeChartData(tempMap);
+    }
+
+    public String getSimBestandsArray() {
+        SortedMap<String, SortedMap<String, Integer>> tempMap = BewegungUtils.makeEmptyMap(first, last);
+        BewegungUtils.addSeries(tempMap, simBestandsMap, "Bestand");
+        BewegungUtils.addSeries(tempMap, simZugangsMap, "Reorders");
         return ChartUtils.makeChartData(tempMap);
     }
 
@@ -225,7 +296,10 @@ public class BewegungService {
         initVorzeichen();
         initZuAbgaenge();
         initBewegungsMap();
+        initAbgangsMap();
         initBestandsMap();
+        bestellmenge = getMaxAbgangsmenge();
+        initSimBestandsMap();
         initChartMap();
     }
 
@@ -248,7 +322,7 @@ public class BewegungService {
     public int getMaxAbgangsmenge() {
         return getMaxAbgangsmenge(abgangsInterval);
     }
-    
+
     private int getMaxAbgangsmenge(int intervalInDays) {
         int maxAbgang = 0;
         Date from = getFirst();
@@ -289,9 +363,22 @@ public class BewegungService {
 
         return maxAbgang;
     }
-    
+
     public Integer getMengeOfBwa(String bwa) {
-        return getBwaMengen().get(bwa);        
+        return getBwaMengen().get(bwa);
     }
 
+    public void setAbgangsInterval(int ab) {
+        abgangsInterval = ab;
+        initSimBestandsMap();
+    }
+
+    public Integer getBestellmenge() {
+        return bestellmenge;
+    }
+
+    public void setBestellmenge(Integer x) {
+        bestellmenge = x;
+        log.finest("setBestellmenge " + x);
+    }
 }
