@@ -129,6 +129,29 @@
                     <p:ajax process="@this" />
                 </p:spinner>
 
+                <h:outputText value="Kosten pro Bestellung: "/>
+                <p:spinner value="#{bewegungView.kostenProBestellung}">
+                    <p:ajax process="@this" />
+                </p:spinner>
+
+                <h:outputText value="Bestandszins:"/>
+                <p:spinner value="#{bewegungView.bestandsZins}">
+                    <p:ajax process="@this" />
+                </p:spinner>
+
+                <h:outputText value="Durchschnittsbestand:"/>
+                <h:outputText value="0"/>
+
+                <h:outputText value="Anzahl Bestellungen:"/>
+                <h:outputText value="0"/>
+
+                <h:outputText value="Tage mit Fehlbestand:"/>
+                <h:outputText value="0"/>
+
+                <h:outputText value="Minimaler Bestand:"/>
+                <h:outputText value="0"/>
+
+
                 <h:form id="redrawButtonForm">
                     <h:commandButton value="Redraw Chart"
                                      onclick="redrawSimChart(#{bewegungView.getSimBestandsArray()})"/>
