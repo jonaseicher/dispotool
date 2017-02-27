@@ -20,8 +20,6 @@
 
                 drawBewegungsChart(#{bewegungView.chartArray});
 
-                drawBestandsChart(#{bewegungView.bestandsArray});
-
                 drawSimChart(#{bewegungView.simBestandsArray});
 
             }
@@ -51,7 +49,6 @@
                     keepInBounds: true
                 }
             };
-
 
             var simChartOptions = {'title': 'Bestandsverlauf mit simulierten Bestellungen für Materialnummer: #{bewegungView.materialNummer}',
                 'height': 400,
