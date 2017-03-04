@@ -39,6 +39,25 @@ public class BewegungView implements Serializable {
     @Inject
     BewegungService bewegungService;
 
+    Integer kostenProBestellung = 100;
+    Double bestandsZins = 0.05;
+
+    public Integer getKostenProBestellung() {
+        return kostenProBestellung;
+    }
+
+    public void setKostenProBestellung(Integer kostenProBestellung) {
+        this.kostenProBestellung = kostenProBestellung;
+    }
+
+    public Double getBestandsZins() {
+        return bestandsZins;
+    }
+
+    public void setBestandsZins(Double bestandsZins) {
+        this.bestandsZins = bestandsZins;
+    }
+    
     @PostConstruct
     public void init() {
         Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();

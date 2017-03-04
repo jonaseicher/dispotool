@@ -206,7 +206,7 @@ public class BewegungService {
             maxBestand = currentBestand;
         }
     }
-       
+
     private void adjustSimMinMax(Integer currentBestand) {
         if (minSimBestand == null || minSimBestand > currentBestand) {
             minSimBestand = currentBestand;
@@ -214,6 +214,13 @@ public class BewegungService {
         if (maxSimBestand == null || maxSimBestand < currentBestand) {
             maxSimBestand = currentBestand;
         }
+    }
+
+    private void resetMinMax() {
+        minSimBestand = null;
+        maxSimBestand = null;
+        maxBestand = null;
+        minBestand = null;
     }
 
     public void initSimBestandsMap() {
@@ -245,13 +252,13 @@ public class BewegungService {
                 }
             }
             simBestandsMap.put(dateString, currentBestand);
+            adjustSimMinMax(currentBestand);
             if (currentBestand + ordered <= maxAbgangsmenge) {
                 Date nowPlusInterval = DateUtils.addDays(day, abgangsInterval);
                 String arrivalDate = format.format(nowPlusInterval);
                 simZugangsMap.put(arrivalDate, bestellmenge);
                 ordered += bestellmenge;
             }
-            adjustSimMinMax(currentBestand);
 //            log.log(Level.FINER, "Date and Bestand: {0}: {1}", new Object[]{dateString, currentBestand});
         }
 
@@ -275,12 +282,17 @@ public class BewegungService {
 
     public String getSimBestandsArray() {
         SortedMap<String, SortedMap<String, Integer>> tempMap = BewegungUtils.makeEmptyMap(first, last);
-        BewegungUtils.addSeries(tempMap, simBestandsMap, "Bestand");
-        BewegungUtils.addSeries(tempMap, simZugangsMap, "Reorders");
-        Map min = BewegungUtils.makeEmpty1Map(first, last, minSimBestand);
-        BewegungUtils.addSeries(tempMap, min, "Min");
-        Map max = BewegungUtils.makeEmpty1Map(first, last, maxSimBestand);
-        BewegungUtils.addSeries(tempMap, max, "Max");
+        BewegungUtils.addSeries(tempMap, simBestandsMap, "2_Bestand(Simuliert)");
+        Map minSim = BewegungUtils.makeEmpty1Map(first, last, minSimBestand);
+        BewegungUtils.addSeries(tempMap, minSim, "2_Min(Simuliert)");
+        Map maxSim = BewegungUtils.makeEmpty1Map(first, last, maxSimBestand);
+        BewegungUtils.addSeries(tempMap, maxSim, "2_Max(Simuliert)");
+        BewegungUtils.addSeries(tempMap, bestandsMap, "1_Bestand(Real)");
+        Map min = BewegungUtils.makeEmpty1Map(first, last, minBestand);
+        BewegungUtils.addSeries(tempMap, min, "1_Min(Real)");
+        Map max = BewegungUtils.makeEmpty1Map(first, last, maxBestand);
+        BewegungUtils.addSeries(tempMap, max, "1_Max(Real)");
+        BewegungUtils.addSeries(tempMap, simZugangsMap, "Reorders(Simuliert)");
         return ChartUtils.makeChartData(tempMap);
     }
 
@@ -319,6 +331,7 @@ public class BewegungService {
         last = BewegungUtils.getLastDate(bewegungen);
         bwas = getBwasOfMaterial();
         bwaMengen = bewegungDao.getBwaMengen(materialNummer);
+        resetMinMax();
         initVorzeichen();
         initZuAbgaenge();
         initBewegungsMap();
