@@ -37,8 +37,7 @@ public class BewegungUtils {
         }
     }
     
-    
-    public static SortedMap<String, Integer> makeEmpty1Map(Date first, Date last) {
+    public static SortedMap<String, Integer> makeEmpty1Map(Date first, Date last, Integer value) {
 
         SortedMap<String, Integer> map = new TreeMap();
         Date lastPlusOne = DateUtils.addDays(last, 1);
@@ -46,9 +45,13 @@ public class BewegungUtils {
         SimpleDateFormat format = new SimpleDateFormat("yyyy,MM,dd");
         for (Date day = first; day.before(lastPlusOne); day = DateUtils.addDays(day, 1)) {
             String dateString = format.format(day);
-            map.put(dateString, 0);
+            map.put(dateString, value);
         }
         return map;
+    }
+    
+    public static SortedMap<String, Integer> makeEmpty1Map(Date first, Date last) {
+        return makeEmpty1Map(first, last, 0);
     }
 
     public static SortedMap<String, SortedMap<String, Integer>> makeEmptyMap(Date first, Date last) {

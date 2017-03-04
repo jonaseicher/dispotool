@@ -70,6 +70,8 @@ public class BewegungService {
     Map<String, Integer> bwaMengen;
     Integer bestellmenge;
 
+    Integer minBestand, maxBestand, minSimBestand, maxSimBestand;
+
     String materialNummer;
     BarChartModel barChartModel;
     List<String> types = Constants.TYPES;
@@ -191,7 +193,26 @@ public class BewegungService {
                 }
             }
             bestandsMap.put(dateString, currentBestand);
-            log.log(Level.FINER, "Date and Bestand: {0}: {1}", new Object[]{dateString, currentBestand});
+            adjustMinMax(currentBestand);
+//            log.log(Level.FINER, "Date and Bestand: {0}: {1}", new Object[]{dateString, currentBestand});
+        }
+    }
+
+    private void adjustMinMax(Integer currentBestand) {
+        if (minBestand == null || minBestand > currentBestand) {
+            minBestand = currentBestand;
+        }
+        if (maxBestand == null || maxBestand < currentBestand) {
+            maxBestand = currentBestand;
+        }
+    }
+       
+    private void adjustSimMinMax(Integer currentBestand) {
+        if (minSimBestand == null || minSimBestand > currentBestand) {
+            minSimBestand = currentBestand;
+        }
+        if (maxSimBestand == null || maxSimBestand < currentBestand) {
+            maxSimBestand = currentBestand;
         }
     }
 
@@ -230,7 +251,8 @@ public class BewegungService {
                 simZugangsMap.put(arrivalDate, bestellmenge);
                 ordered += bestellmenge;
             }
-            log.log(Level.FINER, "Date and Bestand: {0}: {1}", new Object[]{dateString, currentBestand});
+            adjustSimMinMax(currentBestand);
+//            log.log(Level.FINER, "Date and Bestand: {0}: {1}", new Object[]{dateString, currentBestand});
         }
 
     }
@@ -255,6 +277,10 @@ public class BewegungService {
         SortedMap<String, SortedMap<String, Integer>> tempMap = BewegungUtils.makeEmptyMap(first, last);
         BewegungUtils.addSeries(tempMap, simBestandsMap, "Bestand");
         BewegungUtils.addSeries(tempMap, simZugangsMap, "Reorders");
+        Map min = BewegungUtils.makeEmpty1Map(first, last, minSimBestand);
+        BewegungUtils.addSeries(tempMap, min, "Min");
+        Map max = BewegungUtils.makeEmpty1Map(first, last, maxSimBestand);
+        BewegungUtils.addSeries(tempMap, max, "Max");
         return ChartUtils.makeChartData(tempMap);
     }
 
