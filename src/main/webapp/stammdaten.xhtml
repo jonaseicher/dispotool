@@ -22,9 +22,9 @@
         <p:column headerText="Materialtext">
           <h:outputText value="#{material.materialtext}" />
         </p:column>
-        <p:column headerText="MatNr" filterBy="#{material.matNr}">
-          <p:link outcome="bewegungen" value="#{material.matNr}">
-            <f:param name="matNr" value="#{material.matNr}" />
+        <p:column headerText="MatNr" filterBy="#{material.matnr}">
+          <p:link outcome="bewegungen" value="#{material.matnr}">
+            <f:param name="matnr" value="#{material.matnr}" />
           </p:link>
         </p:column>
         <p:column rendered="false" headerText="Materialkurztext">

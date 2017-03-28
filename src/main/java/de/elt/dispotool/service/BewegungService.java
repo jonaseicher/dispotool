@@ -7,7 +7,7 @@ package de.elt.dispotool.service;
 
 import de.elt.dispotool.dao.BewegungDao;
 import de.elt.dispotool.dao.BwaDao;
-import de.elt.dispotool.dao.MaterialDao;
+import de.elt.dispotool.dao.BestandDao;
 import de.elt.dispotool.entities.Bewegung;
 import de.elt.dispotool.entities.Bwa;
 import de.elt.dispotool.util.BewegungUtils;
@@ -51,7 +51,7 @@ public class BewegungService {
     BwaDao bwaDao;
 
     @Inject
-    MaterialDao materialDao;
+    BestandDao bestandDao;
 
     List<Bewegung> bewegungen;
     List<Bewegung> zugaenge;
@@ -134,7 +134,7 @@ public class BewegungService {
 //        return bestand;
 //    }
     public Integer getAnfangsbestand() {
-        Integer bestand = materialDao.getBestand2016(materialNummer);
+        Integer bestand = bestandDao.getBestand2016(materialNummer);
         if (bestand == null) {
             bestand = 0;
         }
@@ -176,8 +176,8 @@ public class BewegungService {
 
         bestandsMap = new TreeMap<>();
 
-//        String matNr = getMaterialNummer();
-//        bewegungen = bewegungDao.getByMaterialnummer(matNr);
+//        String matnr = getMaterialNummer();
+//        bewegungen = bewegungDao.getByMaterialnummer(matnr);
         Date lastPlusOne = DateUtils.addDays(last, 1);
         Integer currentBestand = getAnfangsbestand();
 

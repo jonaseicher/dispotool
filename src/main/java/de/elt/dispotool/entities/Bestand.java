@@ -17,15 +17,15 @@ import lombok.Data;
  * @author jonas.eicher
  */
 @Entity
-@Table(name = "stammdaten2")
+@Table(name = "stammdaten3")
 @Data
 public class Bestand implements Serializable {
 
   @Id
-  @Column(name = "matNr")
-  String matNr;
+  @Column(name = "matnr")
+  String matnr;
   @Column(name = "bestand2016")
   int bestand2016;
-  @Column(name = "bestand2015")
-  int bestand2015;
+//  @Column(name = "bestand2015")
+//  int bestand2015;
 }

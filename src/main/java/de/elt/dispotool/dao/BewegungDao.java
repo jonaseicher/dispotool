@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import lombok.extern.java.Log;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -59,12 +60,12 @@ public class BewegungDao extends AbstractBaseDao<Bewegung> {
     public List<String> getMaterialNummern() {
         String jpql = "select distinct b.materialnummer from Bewegung b"; // where b.materialnummer like '10010%'";
         List matnums = em.createQuery(jpql, String.class).getResultList();
-        //log.log(Level.FINE, "matnums:{0}", matnums);
+//        log.log(Level.FINE, "matnums:{0}", matnums);
         return matnums;
     }
 
-    public Map<String, Integer> getBwaMengen(String matNr) {
-        String sql = "select bewegungsart, sum(bewegungsdaten2.menge) from dispotool.bewegungsdaten2 where materialnummer='" + matNr + "' group by bewegungsart";
+    public Map<String, Integer> getBwaMengen(String matnr) {
+        String sql = "select bewegungsart, sum(bewegungsdaten2.menge) from dispotool.bewegungsdaten2 where materialnummer='" + matnr + "' group by bewegungsart";
         List<Object[]> results = em.createNativeQuery(sql).getResultList();
 
         Map<String, Integer> map = new HashMap();

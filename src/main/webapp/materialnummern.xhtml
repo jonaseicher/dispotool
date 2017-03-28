@@ -13,7 +13,7 @@
             <p:growl id="msgs" showDetail="true"/>
 
 
-            <p:dataTable var="matnr" value="#{matNrView.materialNummerList}"
+            <p:dataTable var="matnr" value="#{matnrView.materialNummerList}"
                          emptyMessage="Keine Bewegungen zu dieser Materialnummer gefunden">
 
                 <f:facet name="header">
@@ -25,20 +25,20 @@
                 <p:column filterBy="#{matnr}" sortBy="#{matnr}" headerText="Filter" 
                           footerText="contains" filterMatchMode="contains">
                     <p:link outcome="bewegungen" value="#{matnr}">
-                        <f:param name="matNr" value="#{matnr}" />
+                        <f:param name="matnr" value="#{matnr}" />
                     </p:link>
                 </p:column>
                 
                 <p:column headerText="Bewegungen">
                     <p:link outcome="bewegungen" value="Bewegungen">
-                        <f:param name="matNr" value="#{matnr}" />
+                        <f:param name="matnr" value="#{matnr}" />
                     </p:link>
                 </p:column>
                 
                 
                 <p:column headerText="Reorder Point">
                     <p:link outcome="reorderpoint" value="Simulieren">
-                        <f:param name="matNr" value="#{matnr}" />
+                        <f:param name="matnr" value="#{matnr}" />
                     </p:link>
                 </p:column>
 

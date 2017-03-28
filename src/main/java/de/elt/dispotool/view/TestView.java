@@ -46,8 +46,8 @@ public class TestView implements Serializable {
 
   @PostConstruct
   public void init() {
-    String matNr = "64365703";
-    bewegungen = dao.getByMaterialnummer(matNr);
+    String matnr = "64365703";
+    bewegungen = dao.getByMaterialnummer(matnr);
    Object[][] o = { {4,3},{5,3,3} }; 
    testData = new ArrayList();
    for (Bewegung b :bewegungen) {

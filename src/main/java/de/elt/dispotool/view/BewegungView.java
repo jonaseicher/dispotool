@@ -7,7 +7,7 @@ package de.elt.dispotool.view;
 
 import de.elt.dispotool.dao.BewegungDao;
 import de.elt.dispotool.dao.BwaDao;
-import de.elt.dispotool.dao.MaterialDao;
+import de.elt.dispotool.dao.BestandDao;
 import de.elt.dispotool.entities.Bewegung;
 import de.elt.dispotool.entities.Bwa;
 import de.elt.dispotool.service.BewegungService;
@@ -61,9 +61,9 @@ public class BewegungView implements Serializable {
     @PostConstruct
     public void init() {
         Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-        String matNr = params.get("matNr");
+        String matnr = params.get("matnr");
 
-        bewegungService.setMaterialNummer(matNr);
+        bewegungService.setMaterialNummer(matnr);
     }
     
     public Integer getBestellmenge() {
@@ -133,8 +133,8 @@ public class BewegungView implements Serializable {
         return bewegungService.getBwaDao();
     }
 
-    public MaterialDao getMaterialDao() {
-        return bewegungService.getMaterialDao();
+    public BestandDao getBestandDao() {
+        return bewegungService.getBestandDao();
     }
 
     public List<Bewegung> getBewegungen() {
@@ -201,8 +201,8 @@ public class BewegungView implements Serializable {
         bewegungService.setBwaDao(bwaDao);
     }
 
-    public void setMaterialDao(MaterialDao materialDao) {
-        bewegungService.setMaterialDao(materialDao);
+    public void setBestandDao(BestandDao materialDao) {
+        bewegungService.setBestandDao(materialDao);
     }
 
     public void setBewegungen(List<Bewegung> bewegungen) {

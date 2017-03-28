@@ -41,7 +41,7 @@ import org.primefaces.model.chart.BarChartModel;
 @Getter
 @Setter
 @Log
-public class MatNrView implements Serializable {
+public class MatnrView implements Serializable {
 
     @Inject
     BewegungDao bewegungDao;

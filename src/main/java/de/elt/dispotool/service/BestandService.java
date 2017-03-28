@@ -14,11 +14,11 @@ import de.elt.dispotool.dao.BewegungDao;
 public class BestandService {
     
     
-    String matNr;
+    String matnr;
     BewegungDao bewegungDao;
 
-    public BestandService(String matNr, BewegungDao dao) {
-        this.matNr = matNr;
+    public BestandService(String matnr, BewegungDao dao) {
+        this.matnr = matnr;
         this.bewegungDao = dao;
     }
     
