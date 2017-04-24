@@ -77,15 +77,34 @@ public class BewegungService {
     List<String> types = Constants.TYPES;
 
     public void initBewegungsMap() {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy,MM,dd");
         bewegungsMap = BewegungUtils.makeEmptyMap(first, last);
 
-        for (Bwa bwa : bwas) {
-            String bwaString = bwa.getBwa();
-            if (getVorzeichen().get(bwaString) == 0) {
-                continue;
+//        for (Bwa bwa : bwas) {
+//            String bwaString = bwa.getBwa();
+//            int vorz = getVorzeichen().get(bwaString);
+//            //log.fine("bwaString: "+bwaString+", vorz: "+vorz);
+//            if (getVorzeichen().get(bwaString) == 0) {
+//                continue;
+//            }
+//            Map<String, Integer> series = getBewegungenAsMap(bwaString);
+//            BewegungUtils.addSeries(bewegungsMap, series, bwaString);
+////          log.fine("bwaString: "+bwaString+", vorz: "+vorz);
+//        }
+        log.info("Bewegungen.size: " + bewegungen.size());
+        for(Bewegung b : bewegungen) {
+            String bwa = b.getBewegungsart();
+            String date = format.format(b.getBuchungsdatum());
+            SortedMap<String, Integer> subMap = bewegungsMap.get(date);
+            if (subMap == null) {
+                subMap = new TreeMap();
+                bewegungsMap.put(date, subMap);
             }
-            Map<String, Integer> series = getBewegungenAsMap(bwaString);
-            BewegungUtils.addSeries(bewegungsMap, series, bwaString);
+            Integer menge = subMap.get(bwa);
+            if (menge == null){
+                menge = 0;
+            }
+            subMap.put(bwa, menge + getValue(b));
         }
     }
 
@@ -139,12 +158,18 @@ public class BewegungService {
             bestand = 0;
         }
 
+        int count = 0, count2 = 0, zuSum = 0, abSum = 0;
         for (Bewegung zu : zugaenge) {
             bestand -= zu.getMenge();
+            zuSum += zu.getMenge();
+            count++;
         }
         for (Bewegung ab : abgaenge) {
             bestand += ab.getMenge();
+            abSum += ab.getMenge();
+            count2++;
         }
+        log.log(Level.INFO, "zugaenge: {0}, count: {1}, ab: {2}, count: {3}, diff: {4}, bes2016: {5}, bes2015(calc): {6}", new Object[]{zuSum, count, abSum, count2, zuSum - abSum, bestandDao.getBestand2016(materialNummer), bestand});
         return bestand;
     }
 
@@ -155,12 +180,15 @@ public class BewegungService {
             int vz = getVorzeichen().get(b.getBewegungsart());
             switch (vz) {
                 case 0:
+//                    log.fine("case"+vz+": " +b.getBewegungsart());
                     break;
                 case 1:
                     zugaenge.add(b);
+//                    log.fine("case"+vz+": " +b.getBewegungsart());
                     break;
                 case -1:
                     abgaenge.add(b);
+//                    log.fine("case"+vz+": " +b.getBewegungsart());
                     break;
                 default:
                     log.warning("Default Case in Vorzeichen switch! Value was: " + vz);
@@ -180,22 +208,33 @@ public class BewegungService {
 //        bewegungen = bewegungDao.getByMaterialnummer(matnr);
         Date lastPlusOne = DateUtils.addDays(last, 1);
         Integer currentBestand = getAnfangsbestand();
-
+        int zuSum = 0, abSum = 0, count1 = 0, count2 = 0, count3=0, count4=0;
         SimpleDateFormat format = new SimpleDateFormat("yyyy,MM,dd");
         for (Date day = first; day.before(lastPlusOne); day = DateUtils.addDays(day, 1)) {
             String dateString = format.format(day);
             SortedMap<String, Integer> dayBewegungen = bewegungsMap.get(dateString);
+            count3++;
             if (dayBewegungen != null) {
                 for (Map.Entry<String, Integer> entry : dayBewegungen.entrySet()) {
+                    count4++;
                     Integer menge = entry.getValue();
+                    if (menge > 0) {
+                        zuSum += menge;
+                        count1++;
+                    } else {
+                        abSum += menge;
+                        count2++;
+                    }
                     currentBestand += menge;
-//                    log.log(Level.FINEST, "CurrentBestand changed. Date: {0}, Bestand: {1}", new Object[]{dateString, currentBestand});
+                    //log.log(Level.FINEST, "CurrentBestand changed. Date: {0}, Bestand: {1}", new Object[]{dateString, currentBestand});
                 }
             }
             bestandsMap.put(dateString, currentBestand);
             adjustMinMax(currentBestand);
 //            log.log(Level.FINER, "Date and Bestand: {0}: {1}", new Object[]{dateString, currentBestand});
         }
+        log.log(Level.INFO, "zugaenge: {0}, count: {1}, ab: {2}, count: {3}, diff: {4}, bes2016: {5}, bes2015(calc): {6}, bewegungsMap.size: {7}, count3: {8}, count4: {9}", new Object[]{zuSum, count1, abSum, count2, zuSum + abSum, bestandDao.getBestand2016(materialNummer), currentBestand, bewegungsMap.size(),count3, count4});
+        
     }
 
     private void adjustMinMax(Integer currentBestand) {
